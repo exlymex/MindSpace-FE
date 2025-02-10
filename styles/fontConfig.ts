@@ -1,0 +1,141 @@
+import {moderateScale, scale} from 'react-native-size-matters';
+import * as Device from "expo-device";
+
+const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+const currentScale = (number: number) => (isTablet ? moderateScale(number, 0.2) : scale(number));
+
+export const fontConfig = {
+    ezBigTitleSemi: {
+        fontFamily: 'Inter',
+        fontWeight: '600',
+        letterSpacing: -0.05,
+        lineHeight: currentScale(58.09),
+        fontSize: currentScale(48),
+    },
+    ezH1Semi: {
+        fontFamily: 'Inter',
+        fontWeight: '600',
+        letterSpacing: -0.05,
+        lineHeight: currentScale(33.89),
+        fontSize: currentScale(26),
+    },
+    ezH1Regular: {
+        fontFamily: 'Inter',
+        fontWeight: '500',
+        letterSpacing: -0.05,
+        lineHeight: currentScale(29.05),
+        fontSize: currentScale(24),
+    },
+    ezH2Semi: {
+        fontFamily: 'Inter',
+        fontWeight: '600',
+        letterSpacing: -0.05,
+        lineHeight: currentScale(29.05),
+        fontSize: currentScale(24),
+    },
+    ezH3Semi: {
+        fontFamily: 'Inter',
+        fontWeight: '600',
+        letterSpacing: -0.05,
+        lineHeight: currentScale(24.2),
+        fontSize: currentScale(20),
+    },
+    ezH4Extra: {
+        fontFamily: 'Inter',
+        fontWeight: '800',
+        letterSpacing: 0.03,
+        lineHeight: currentScale(19.36),
+        fontSize: currentScale(16),
+    },
+    ezH4Semi: {
+        fontFamily: 'Inter',
+        fontWeight: '600',
+        letterSpacing: 0.03,
+        lineHeight: currentScale(19.36),
+        fontSize: currentScale(16),
+    },
+    ezH4Regular: {
+        fontFamily: 'Inter',
+        fontWeight: '500',
+        letterSpacing: 0.03,
+        lineHeight: currentScale(19.36),
+        fontSize: currentScale(16),
+    },
+    ezButtonMedium: {
+        fontFamily: 'Inter',
+        fontWeight: '500',
+        letterSpacing: 0,
+        lineHeight: currentScale(16.94),
+        fontSize: currentScale(14),
+    },
+    ezSubtitleRegular: {
+        fontFamily: 'Inter',
+        fontWeight: '400',
+        letterSpacing: 0,
+        lineHeight: currentScale(20),
+        fontSize: currentScale(14),
+    },
+    ezSubtitleMedium: {
+        fontFamily: 'Inter',
+        fontWeight: '500',
+        letterSpacing: 0,
+        lineHeight: currentScale(24),
+        fontSize: currentScale(14),
+    },
+    ezSubtitleMediumLow: {
+        fontFamily: 'Inter',
+        fontWeight: '500',
+        letterSpacing: 0,
+        lineHeight: currentScale(16),
+        fontSize: currentScale(14),
+    },
+    ezSubtitleSemi: {
+        fontFamily: 'Inter',
+        fontWeight: '600',
+        letterSpacing: 0,
+        lineHeight: currentScale(20),
+        fontSize: currentScale(14),
+    },
+    ezSubtitleBold: {
+        fontFamily: 'Inter',
+        fontWeight: '700',
+        letterSpacing: 0,
+        lineHeight: currentScale(16.94),
+        fontSize: currentScale(14),
+    },
+    ezCaptionMedium: {
+        fontFamily: 'Inter',
+        fontWeight: '500',
+        letterSpacing: 0,
+        lineHeight: currentScale(14.52),
+        fontSize: currentScale(12),
+    },
+    ezCaptionBold: {
+        fontFamily: 'Inter',
+        fontWeight: '700',
+        letterSpacing: 0,
+        lineHeight: currentScale(14.52),
+        fontSize: currentScale(12),
+    },
+    ezStateMedium: {
+        fontFamily: 'Inter',
+        fontWeight: '600',
+        letterSpacing: 0,
+        lineHeight: currentScale(14.52),
+        fontSize: currentScale(12),
+    },
+    ezChartRegular: {
+        fontFamily: 'Inter',
+        fontWeight: '400',
+        letterSpacing: 0,
+        lineHeight: currentScale(10.89),
+        fontSize: currentScale(8),
+    },
+    ezChartSemi: {
+        fontFamily: 'Inter',
+        fontWeight: '600',
+        letterSpacing: 0,
+        lineHeight: currentScale(16),
+        fontSize: currentScale(8),
+    },
+} as const;
