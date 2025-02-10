@@ -1,21 +1,22 @@
-
-import { Redirect, Slot } from "expo-router";
-import { ActivityIndicator } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {useAppSelector} from "@/store/store.ts";
+import {Redirect, Slot} from 'expo-router';
 
 export default function AppLayout() {
+    const {accessToken} = useAppSelector((state) => state.auth);
 
-  if (false) {
-    return (
-      <SafeAreaView className="bg-white h-full flex justify-center items-center">
-        <ActivityIndicator className="text-primary-300" size="large" />
-      </SafeAreaView>
-    );
-  }
+    // You can keep the splash screen open, or render a loading screen like we do here.
+    // if (isLoading) {
+    //     return <Text>Loading...</Text>;
+    // }
 
-  if (true) {
-    return <Redirect href="/login" />;
-  }
+    // Only require authentication within the (app) group's layout as users
+    // need to be able to access the (auth) group and sign in again.
+    if (!accessToken) {
+        // On web, static rendering will stop here as the user is not authenticated
+        // in the headless Node process that the pages are rendered in.
+        return <Redirect href="/register"/>;
+    }
 
-  return <Slot />;
+    // This layout can be deferred because it's not the root layout.
+    return <Slot/>;
 }

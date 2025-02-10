@@ -1,7 +1,7 @@
 import React from 'react';
 import {PaperProvider} from "react-native-paper";
-import {Stack} from "expo-router";
 import {useThemeToggle} from "@/hooks";
+import {Stack} from "expo-router";
 
 const GlobalRoot = () => {
     const {theme} = useThemeToggle();

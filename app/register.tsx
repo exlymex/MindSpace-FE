@@ -28,7 +28,7 @@ export default function RegisterScreen() {
     const onSubmit = async (data: RegisterFormData) => {
         try {
             await signUp({email: data.email, password: data.password}).unwrap();
-            router.replace('/');
+            router.replace('/login');
         } catch (error) {
             // Error is handled by RTK Query
         }
@@ -37,7 +37,7 @@ export default function RegisterScreen() {
     const handleAnonymousSignUp = async () => {
         try {
             await signUpAnonymously().unwrap();
-            router.replace('/');
+            // router.replace('/');
         } catch (error) {
             // Error is handled by RTK Query
         }

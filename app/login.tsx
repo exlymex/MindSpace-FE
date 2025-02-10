@@ -4,16 +4,20 @@ import {useRouter} from 'expo-router';
 import {useSignInMutation} from '@/features/auth/api/authApi';
 import {LoginForm} from '@/features/auth/components/LoginForm';
 import {CustomText} from "@/components";
+import {useAppDispatch} from "@/store/store.ts";
+import {setAccessToken} from "@/store/slices/authSlice.ts";
 
 export default function LoginScreen() {
     const theme = useTheme();
     const router = useRouter();
     const [signIn, {isLoading, error}] = useSignInMutation();
+    const dispatch = useAppDispatch();
 
     const handleSubmit = async (data: { email: string; password: string }) => {
         try {
-            await signIn(data).unwrap();
-            router.replace('/');
+            // await signIn(data).unwrap();
+            dispatch(setAccessToken('fake-access-token'));
+            router.replace('/chat');
         } catch (error) {
             // Error is handled by RTK Query
         }

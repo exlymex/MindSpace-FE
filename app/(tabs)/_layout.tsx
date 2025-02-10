@@ -8,7 +8,6 @@ export default function TabLayout() {
         <Tabs
             screenOptions={{
                 headerShown: false,
-
                 tabBarStyle: Platform.select({
                     ios: {
                         // Use a transparent background on iOS to show the blur effect
@@ -24,9 +23,9 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="explore"
+                name="chat"
                 options={{
-                    title: 'Explore',
+                    title: 'chat',
                 }}
             />
         </Tabs>

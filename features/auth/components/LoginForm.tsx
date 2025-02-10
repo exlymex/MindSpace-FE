@@ -1,9 +1,7 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useForm} from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers/yup';
 import {Button} from 'react-native-paper';
-import {loginSchema} from '../validation';
 import {ControlledInput, ControlledPassword, CustomText} from "@/components";
 
 type LoginFormData = {
@@ -19,7 +17,7 @@ type LoginFormProps = {
 
 export function LoginForm({onSubmit, isLoading, error}: LoginFormProps) {
     const {control, handleSubmit} = useForm<LoginFormData>({
-        resolver: yupResolver(loginSchema),
+        // resolver: yupResolver(loginSchema),
     });
 
     return (
