@@ -1,8 +1,10 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import { StyleSheet, View} from 'react-native';
 import {useForm} from 'react-hook-form';
 import {Button} from 'react-native-paper';
-import {ControlledInput, ControlledPassword, CustomText} from "@/components";
+import {ControlledInput, ControlledPassword, ControlledPicker, CustomText} from "@/components";
+import { yupResolver } from '@hookform/resolvers/yup';
+import { loginSchema } from '../validation';
 
 type LoginFormData = {
     email: string;
@@ -17,13 +19,18 @@ type LoginFormProps = {
 
 export function LoginForm({onSubmit, isLoading, error}: LoginFormProps) {
     const {control, handleSubmit} = useForm<LoginFormData>({
-        // resolver: yupResolver(loginSchema),
+        resolver: yupResolver(loginSchema),
+        defaultValues: {
+            email: '',
+            password: '',
+        }
     });
 
     return (
         <View>
-            <ControlledInput placeholder="Enter your email" control={control} name="email"/>
-            <ControlledPassword placeholder="Enter your password" control={control} name="password"/>
+            <ControlledInput label="Емейл" placeholder="Введіть ваш емейл" control={control} name="email"/>
+            <ControlledPassword label="Пароль" placeholder="Введіть ваш пароль" control={control} name="password"/>
+        
             {error ? (
                 <CustomText style={styles.errorText}>
                     {error}
@@ -35,7 +42,7 @@ export function LoginForm({onSubmit, isLoading, error}: LoginFormProps) {
                 loading={isLoading}
                 style={styles.button}
             >
-                Sign In
+                Увійти
             </Button>
         </View>
     );

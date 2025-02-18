@@ -9,7 +9,7 @@ import {useStyles} from '@/hooks';
 import {fontConfig} from '@/styles/fontConfig';
 
 import {styles} from './styles';
-import {CustomText} from "@/components";
+import {CustomText} from "../CustomText/CustomText";
 
 interface ScreenContainerProps {
     title: string;

@@ -1,37 +1,27 @@
 import {FC, useMemo, useState} from 'react';
-import {View} from 'react-native';
-
-import {HelperText} from 'react-native-paper';
-import RNPickerSelect, {Item} from 'react-native-picker-select';
-
-import {Arrow} from '@/assets';
+import {View, TouchableOpacity} from 'react-native';
+import Modal from 'react-native-modal';
+import {Picker as RNPicker} from '@react-native-picker/picker';
+import {HelperText, Text} from 'react-native-paper';
 import {getActiveItemLabel} from '@/helpers';
 import {useStyles} from '@/hooks';
 import {IListOption} from '@/types/custom';
-
 import {DisabledValue} from '../DisabledValue/DisabledValue';
 import {styles} from './styles';
-
-interface IArrowIcon {
-    isPickerOpen: boolean;
-}
 
 interface PickerProps {
     items: IListOption[];
     onChange: (value: string) => void;
-    placeholder?: Partial<Item>;
+    placeholder?: { label: string; value: null };
     label: string;
     value: string;
     error?: string;
     disabled?: boolean;
 }
 
-const RotateIcon: FC<IArrowIcon> = ({isPickerOpen}) => (
-    <Arrow style={{transform: [{rotate: isPickerOpen ? '180deg' : '0deg'}]}}/>
-);
 export const Picker: FC<PickerProps> = ({items, onChange, placeholder, value, error, label, disabled}) => {
     const {s} = useStyles(styles);
-    const [isPickerOpen, setPickerOpen] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
     const activeItemLabel = useMemo(() => getActiveItemLabel(value, items), [value, items]);
 
     if (disabled) {
@@ -44,23 +34,46 @@ export const Picker: FC<PickerProps> = ({items, onChange, placeholder, value, er
                 {label}
             </HelperText>
 
-            <RNPickerSelect
-                Icon={() => <RotateIcon isPickerOpen={isPickerOpen}/>}
-                value={value}
-                placeholder={placeholder}
-                useNativeAndroidPickerStyle={false}
-                style={{
-                    iconContainer: s.iconContainer,
-                    inputIOS: [s.pickerIos, error ? s.errorPicker : {}],
-                    inputAndroid: [s.pickerIos, error ? s.errorPicker : {}],
-                    placeholder: s.placeholder,
-                }}
-                onValueChange={value => onChange(value)}
-                onOpen={() => setPickerOpen(true)}
-                onClose={() => setPickerOpen(false)}
-                items={items}
-                disabled={disabled}
-            />
+            <TouchableOpacity 
+                style={[s.pickerContainer, error ? s.errorPicker : {}]}
+                onPress={() => setIsVisible(true)}
+            >
+                <Text style={s.pickerText}>
+                    {activeItemLabel || placeholder?.label || 'Select...'}
+                </Text>
+            </TouchableOpacity>
+
+            <Modal
+                isVisible={isVisible}
+                onBackdropPress={() => setIsVisible(false)}
+                style={s.modal}
+            >
+                <View style={s.modalContent}>
+                    <RNPicker
+                        selectedValue={value}
+                        onValueChange={(itemValue) => {
+                            onChange(itemValue);
+                            setIsVisible(false);
+                        }}
+                        style={s.picker}
+                    >
+                        {placeholder && (
+                            <RNPicker.Item 
+                                label={placeholder.label}
+                                value={placeholder.value}
+                            />
+                        )}
+                        {items.map((item) => (
+                            <RNPicker.Item
+                                key={item.value}
+                                label={item.label}
+                                value={item.value}
+                            />
+                        ))}
+                    </RNPicker>
+                </View>
+            </Modal>
+
             {error !== 'hidden' ? (
                 <HelperText
                     style={[s.errorText, !!error && s.errorColor]}

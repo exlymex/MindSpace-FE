@@ -20,7 +20,6 @@ interface ControlledPickerProps<TFieldValues extends FieldValues, TName extends 
 export const ControlledPicker = <TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>({
                                                                                                               name,
                                                                                                               control,
-                                                                                                              rules,
                                                                                                               label,
                                                                                                               placeholder,
                                                                                                               items = [],
@@ -29,7 +28,6 @@ export const ControlledPicker = <TFieldValues extends FieldValues, TName extends
     <Controller
         name={name}
         control={control}
-        rules={rules}
         render={({field: {onChange, value}, fieldState}) => (
             <Picker
                 items={items}

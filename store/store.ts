@@ -4,12 +4,14 @@ import {authApi} from '@/features/auth/api/authApi';
 import {themeReducer} from "@/store/slices/themeSlice";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 import {authReducer} from "@/store/slices/authSlice.ts";
+import chatReducer from './slices/chatSlice';
 
 export const store = configureStore({
     reducer: {
         [authApi.reducerPath]: authApi.reducer,
         theme: themeReducer,
         auth: authReducer,
+        chat: chatReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(authApi.middleware),

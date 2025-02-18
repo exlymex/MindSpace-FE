@@ -5,7 +5,7 @@ import {HelperText} from 'react-native-paper';
 import {useStyles} from '@/hooks';
 
 import {styles} from './styles.ts';
-import {CustomText} from "@/components";
+import {CustomText} from "../CustomText/CustomText";
 
 interface InfoTextFieldProps extends TextInputProps {
     label: string;

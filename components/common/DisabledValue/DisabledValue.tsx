@@ -4,7 +4,7 @@ import {View} from 'react-native';
 import {useStyles} from '@/hooks';
 
 import {styles} from './styles';
-import {CustomText} from "@/components";
+import {CustomText} from "../CustomText/CustomText";
 
 interface IDisabledValueProps {
     value: string;
@@ -24,5 +24,5 @@ const DisabledValue: FC<IDisabledValueProps> = ({value, label}) => {
         </View>
     );
 };
-
 export {DisabledValue};
+

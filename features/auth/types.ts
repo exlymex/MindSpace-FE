@@ -9,3 +9,13 @@ export type AuthState = {
   loading: boolean;
   error: string | null;
 };
+
+export type RegisterFormData = {
+    username: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    role: 'student' | 'psychologist';
+};
+
+export type RegisterRequestData = Omit<RegisterFormData, 'confirmPassword'>;

@@ -1,5 +1,22 @@
-import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { AuthUser } from '../types';
+
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+  role: 'student' | 'psychologist';
+}
+
+interface AuthResponse {
+  user: AuthUser;
+  token: string;
+}
 
 // Mock user database
 const MOCK_USER: AuthUser = {
@@ -10,53 +27,29 @@ const MOCK_USER: AuthUser = {
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fakeBaseQuery(),
+  baseQuery: fetchBaseQuery({ 
+    baseUrl: 'http://localhost:8000/api/v1/auth/',
+  }),
   endpoints: (builder) => ({
-    signIn: builder.mutation<AuthUser, { email: string; password: string }>({
-      queryFn: async ({ email, password }) => {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        if (email === MOCK_USER.email && password === 'password') {
-          return { data: MOCK_USER };
-        }
-        
-        return { 
-          error: 'Invalid email or password' 
-        };
-      },
+    signIn: builder.mutation<AuthResponse, LoginRequest>({
+      query: (credentials) => ({
+        url: 'login',
+        method: 'POST',
+        body: credentials,
+      }),
     }),
-    signUp: builder.mutation<AuthUser, { email: string; password: string }>({
-      queryFn: async ({ email, password }) => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock registration success
-        return {
-          data: {
-            id: Math.random().toString(36).substr(2, 9),
-            email,
-            isAnonymous: false,
-          }
-        };
-      },
-    }),
-    signUpAnonymously: builder.mutation<AuthUser, void>({
-      queryFn: async () => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        return {
-          data: {
-            id: Math.random().toString(36).substr(2, 9),
-            isAnonymous: true,
-          }
-        };
-      },
+    signUp: builder.mutation<AuthResponse, RegisterRequest>({
+      query: (userData) => ({
+        url: 'register',
+        method: 'POST',
+        body: userData,
+      }),
     }),
     signOut: builder.mutation<void, void>({
-      queryFn: async () => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        return { data: undefined };
-      },
+      query: () => ({
+        url: 'logout',
+        method: 'POST',
+      }),
     }),
   }),
 });
@@ -64,6 +57,5 @@ export const authApi = createApi({
 export const {
   useSignInMutation,
   useSignUpMutation,
-  useSignUpAnonymouslyMutation,
   useSignOutMutation,
 } = authApi; 

@@ -5,7 +5,7 @@ import {Checked} from '@/assets';
 import {useStyles} from '@/hooks';
 
 import {styles} from './styles.ts';
-import {CustomText} from "@/components";
+import {CustomText} from "../CustomText/CustomText";
 
 interface CheckboxProps {
     isChecked: boolean;

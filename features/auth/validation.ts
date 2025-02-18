@@ -1,21 +1,20 @@
 import * as yup from 'yup';
 
 export const loginSchema = yup.object({
-  email: yup.string().email('Invalid email').required('Email is required'),
-  password: yup.string().required('Password is required'),
+  email: yup.string().required("Email обов'язковий").email("Невірний формат email"),
+  password: yup.string().required("Пароль обов'язковий"),
 });
 
 export const registerSchema = yup.object({
-  email: yup.string().email('Invalid email').required('Email is required'),
-  password: yup
-    .string()
-    .required('Password is required')
-    .min(8, 'Password must be at least 8 characters')
-    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .matches(/[0-9]/, 'Password must contain at least one number'),
-  confirmPassword: yup
-    .string()
-    .required('Please confirm your password')
-    .oneOf([yup.ref('password')], 'Passwords must match'),
+  username: yup.string().required('Імʼя користувача обовʼязкове'),
+  email: yup.string().email('Невірний формат email').required('Email обовʼязковий'),
+  password: yup.string()
+    .min(6, 'Пароль має бути не менше 6 символів')
+    .required('Пароль обовʼязковий'),
+  confirmPassword: yup.string()
+    .oneOf([yup.ref('password')], 'Паролі не співпадають')
+    .required('Підтвердження пароля обовʼязкове'),
+  role: yup.string()
+    .oneOf(['student', 'psychologist'], 'Оберіть роль')
+    .required('Роль обовʼязкова')
 }); 

@@ -7,6 +7,32 @@ export const styles = (theme: AppTheme) =>
         container: {
             width: '100%',
         },
+        pickerContainer: {
+            borderWidth: 1,
+            borderColor: theme.colors.ezGrayMedium,
+            borderRadius: theme.scale(6),
+            backgroundColor: theme.colors.surface,
+            padding: theme.scale(10),
+            minHeight: theme.scale(40),
+            justifyContent: 'center',
+        },
+        pickerText: {
+            fontSize: theme.scale(14),
+            color: theme.colors.ezBlack,
+        },
+        modal: {
+            justifyContent: 'flex-end',
+            margin: 0,
+        },
+        modalContent: {
+            backgroundColor: theme.colors.surface,
+            borderTopLeftRadius: theme.scale(15),
+            borderTopRightRadius: theme.scale(15),
+            padding: theme.scale(20),
+        },
+        picker: {
+            height: theme.scale(200),
+        },
         pickerIos: {
             width: '100%',
             fontSize: theme.scale(14),
