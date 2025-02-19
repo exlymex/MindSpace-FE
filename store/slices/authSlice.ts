@@ -1,45 +1,51 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import {storage, StorageKeys} from '@/utils/storage';
 
-interface AuthSliceState {
+interface AuthState {
     accessToken: string | null;
-    refreshToken: string | null;
-    isActiveTeamDriver: boolean;
+    isFirstLoading: boolean;
 }
 
-interface SetAuthTokens {
-    accessToken: string | null;
-    refreshToken: string | null;
-}
-
-const initialState: AuthSliceState = {
+const initialState: AuthState = {
     accessToken: null,
-    refreshToken: null,
-    isActiveTeamDriver: false,
+    isFirstLoading: true,
 };
+
+export const initializeAuth = createAsyncThunk(
+    'auth/initialize',
+    async () => {
+        const token = await storage.getItem(StorageKeys.ACCESS_TOKEN);
+        return token;
+    }
+);
 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setAccessToken: (state, action: PayloadAction<string | null>) => {
+        setAccessToken: (state, action) => {
             state.accessToken = action.payload;
+            if (action.payload) {
+                storage.setItem(StorageKeys.ACCESS_TOKEN, action.payload);
+            } else {
+                storage.removeItem(StorageKeys.ACCESS_TOKEN);
+            }
         },
-        setRefreshToken: (state, action: PayloadAction<string | null>) => {
-            state.refreshToken = action.payload;
-        },
-        setAuthTokens: (state, action: PayloadAction<SetAuthTokens>) => {
-            state.accessToken = action.payload.accessToken;
-            state.refreshToken = action.payload.refreshToken;
-        },
-        setTeamDriverStatus: (state, action: PayloadAction<boolean>) => {
-            state.isActiveTeamDriver = action.payload;
-        },
-        logoutUser: state => {
+        logout: (state) => {
             state.accessToken = null;
-            state.refreshToken = null;
         },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(initializeAuth.pending, (state) => {
+                state.isFirstLoading = true;
+            })
+            .addCase(initializeAuth.fulfilled, (state, action) => {
+                state.accessToken = action.payload;
+                state.isFirstLoading = false;
+            });
     },
 });
 
-export const {logoutUser, setAccessToken, setAuthTokens, setTeamDriverStatus} = authSlice.actions;
+export const {setAccessToken, logout} = authSlice.actions;
 export const authReducer = authSlice.reducer;

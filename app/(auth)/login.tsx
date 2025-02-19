@@ -15,9 +15,9 @@ export default function LoginScreen() {
 
     const handleSubmit = async (data: { email: string; password: string }) => {
         try {
-            await signIn(data).unwrap();
-            // dispatch(setAccessToken('fake-access-token'));
-            // router.replace('/chat');
+            const response = await signIn(data).unwrap();
+            dispatch(setAccessToken(response.access_token));
+            router.replace('/');
         } catch (error) {
             // Error is handled by RTK Query
         }
@@ -41,7 +41,7 @@ export default function LoginScreen() {
                     <LoginForm
                         onSubmit={handleSubmit}
                         isLoading={isLoading}
-                        error={error as string}
+                        error={error?.data?.message}
                     />
 
                     <Button

@@ -14,16 +14,10 @@ interface RegisterRequest {
 }
 
 interface AuthResponse {
-  user: AuthUser;
-  token: string;
+  access_token: string;
+  // token: string;
 }
 
-// Mock user database
-const MOCK_USER: AuthUser = {
-  id: '1',
-  email: 'test@example.com',
-  isAnonymous: false,
-};
 
 export const authApi = createApi({
   reducerPath: 'authApi',

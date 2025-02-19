@@ -8,6 +8,7 @@ import {addMessage, setConnectionStatus, setTypingStatus} from '@/store/slices/c
 import {useAppSelector} from '@/store/store';
 import {styles} from '@/features/chat/styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { CustomText } from '@/components';
 
 export default function ChatScreen() {
     const {s} = useStyles(styles);
@@ -40,19 +41,22 @@ export default function ChatScreen() {
     }, [dispatch]);
 
     return (
-        <SafeAreaView style={s.container}>
-            {!isConnected && (
-                <View style={s.connectionStatus}>
-                    <Text>Відключено від сервера</Text>
-                </View>
-            )}
-            <MessageList/>
-            {isTyping && (
-                <Text style={s.typingIndicator}>
-                    Психолог набирає повідомлення...
-                </Text>
-            )}
-            <MessageInput/>
-        </SafeAreaView>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+            <CustomText variant="ezH2Semi">Чат</CustomText>
+            <SafeAreaView style={s.container}>
+                {!isConnected && (
+                    <View style={s.connectionStatus}>
+                        <Text>Відключено від сервера</Text>
+                    </View>
+                )}
+                <MessageList/>
+                {isTyping && (
+                    <Text style={s.typingIndicator}>
+                        Психолог набирає повідомлення...
+                    </Text>
+                )}
+                <MessageInput/>
+            </SafeAreaView>
+        </View>
     );
 }

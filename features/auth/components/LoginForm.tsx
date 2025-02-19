@@ -32,7 +32,7 @@ export function LoginForm({onSubmit, isLoading, error}: LoginFormProps) {
             <ControlledPassword label="Пароль" placeholder="Введіть ваш пароль" control={control} name="password"/>
         
             {error ? (
-                <CustomText style={styles.errorText}>
+                <CustomText variant="ezButtonMedium" style={styles.errorText}>
                     {error}
                 </CustomText>
             ) : null}
@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
     },
     errorText: {
         color: 'red',
-        fontSize: 12,
-        marginBottom: 8,
+                marginBottom: 8,
     },
 }); 
