@@ -4,11 +4,21 @@ import { AppTheme } from '@/theme';
 export const styles = (theme: AppTheme) =>
   StyleSheet.create({
     container: {
-    //   flex: 1,
+      flex: 1,
       backgroundColor: theme.colors.surface,
     },
+    header: {
+      padding: theme.scale(16),
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.ezGrayBackground,
+      backgroundColor: theme.colors.surface,
+    },
+    chatContainer: {
+      flex: 1,
+      backgroundColor: theme.colors.ezGrayBackground,
+    },
     messageList: {
-    //   flex: 1,
+      flex: 1,
     },
     messageListContent: {
       padding: theme.scale(16),
@@ -43,6 +53,18 @@ export const styles = (theme: AppTheme) =>
       marginTop: theme.scale(4),
       alignSelf: 'flex-end',
     },
+    connectionStatus: {
+      color: theme.colors.ezErrorRed,
+      marginTop: theme.scale(4),
+    },
+    typingIndicator: {
+      padding: theme.scale(8),
+      paddingHorizontal: theme.scale(16),
+      fontStyle: 'italic',
+      color: theme.colors.ezGrayDark,
+      fontSize: theme.scale(12),
+      backgroundColor: theme.colors.surface,
+    },
     inputContainer: {
       flexDirection: 'row',
       padding: theme.scale(16),
@@ -57,7 +79,7 @@ export const styles = (theme: AppTheme) =>
       paddingHorizontal: theme.scale(16),
       paddingVertical: theme.scale(8),
       marginRight: theme.scale(8),
-      color: theme.colors.ezText,
+      color: theme.colors.ezBlack,
       maxHeight: theme.scale(100),
       fontSize: theme.scale(14),
     },
@@ -70,21 +92,5 @@ export const styles = (theme: AppTheme) =>
     },
     sendButtonDisabled: {
       opacity: 0.5,
-    },
-    connectionStatus: {
-      padding: theme.scale(8),
-      alignItems: 'center',
-      backgroundColor: theme.colors.ezErrorRedLight,
-    },
-    connectionStatusText: {
-      color: theme.colors.ezErrorRedDark,
-      fontSize: theme.scale(12),
-    },
-    typingIndicator: {
-      padding: theme.scale(8),
-      paddingHorizontal: theme.scale(16),
-      fontStyle: 'italic',
-      color: theme.colors.ezGrayDark,
-      fontSize: theme.scale(12),
     },
   }); 

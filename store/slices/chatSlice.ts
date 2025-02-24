@@ -1,42 +1,43 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {mockMessages} from '@/features/chat/mockData';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
 interface Message {
-  id: string;
-  text: string;
-  author: 'user' | 'psychologist';
-  timestamp: number;
+    id: string;
+    text: string;
+    sender: 'user' | 'psychologist';
+    timestamp: number;
 }
 
 interface ChatState {
-  messages: Message[];
-  isConnected: boolean;
-  isTyping: boolean;
+    messages: Message[];
+    isConnected: boolean;
+    isTyping: boolean;
 }
 
 const initialState: ChatState = {
-  messages: [],
-  isConnected: false,
-  isTyping: false,
+    messages: mockMessages,
+    isConnected: false,
+    isTyping: false,
 };
 
 const chatSlice = createSlice({
-  name: 'chat',
-  initialState,
-  reducers: {
-    setMessages: (state, action: PayloadAction<Message[]>) => {
-      state.messages = action.payload;
+    name: 'chat',
+    initialState,
+    reducers: {
+        setMessages: (state, action: PayloadAction<Message[]>) => {
+            state.messages = action.payload;
+        },
+        addMessage: (state, action: PayloadAction<Message>) => {
+            state.messages.push(action.payload);
+        },
+        setConnectionStatus: (state, action: PayloadAction<boolean>) => {
+            state.isConnected = action.payload;
+        },
+        setTypingStatus: (state, action: PayloadAction<boolean>) => {
+            state.isTyping = action.payload;
+        },
     },
-    addMessage: (state, action: PayloadAction<Message>) => {
-      state.messages.push(action.payload);
-    },
-    setConnectionStatus: (state, action: PayloadAction<boolean>) => {
-      state.isConnected = action.payload;
-    },
-    setTypingStatus: (state, action: PayloadAction<boolean>) => {
-      state.isTyping = action.payload;
-    },
-  },
 });
 
-export const { setMessages, addMessage, setConnectionStatus, setTypingStatus } = chatSlice.actions;
+export const {setMessages, addMessage, setConnectionStatus, setTypingStatus} = chatSlice.actions;
 export default chatSlice.reducer; 

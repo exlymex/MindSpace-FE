@@ -9,14 +9,15 @@ interface MessageProps {
   message: {
     id: string;
     text: string;
-    author: 'user' | 'psychologist';
+    sender: 'user' | 'psychologist';
     timestamp: number;
   };
 }
 
 export const Message: FC<MessageProps> = ({message}) => {
   const {s} = useStyles(styles);
-  const isUser = message.author === 'user';
+  
+  const isUser = message.sender === 'user';
 
   return (
     <View style={[s.messageContainer, isUser ? s.userMessage : s.psychologistMessage]}>

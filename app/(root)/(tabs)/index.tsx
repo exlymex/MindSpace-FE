@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ScrollView, SafeAreaView } from 'react-native';
 import Animated, { 
   useAnimatedStyle, 
@@ -13,6 +13,8 @@ import {
   NotificationsBlock,
   UsefulMaterials 
 } from '@/features/home/components';
+import { StyleSheet } from 'react-native';
+import { AppTheme } from '@/theme';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
@@ -49,8 +51,7 @@ export default function HomeScreen() {
       </AnimatedScrollView>
     </SafeAreaView>
   );
-}import { StyleSheet } from 'react-native';
-import { AppTheme } from '@/theme';
+}
 
 export const styles = (theme: AppTheme) =>
   StyleSheet.create({

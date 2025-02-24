@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Text, View} from 'react-native';
+import {View} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {MessageInput, MessageList} from '@/features/chat/components';
 import {useStyles} from '@/hooks';
@@ -7,8 +7,9 @@ import {chatAPI} from '@/features/chat/api';
 import {addMessage, setConnectionStatus, setTypingStatus} from '@/store/slices/chatSlice';
 import {useAppSelector} from '@/store/store';
 import {styles} from '@/features/chat/styles';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { CustomText } from '@/components';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {CustomText} from '@/components';
+import Animated, {FadeIn} from 'react-native-reanimated';
 
 export default function ChatScreen() {
     const {s} = useStyles(styles);
@@ -28,7 +29,10 @@ export default function ChatScreen() {
         });
 
         chatAPI.subscribeToMessages((message) => {
-            dispatch(addMessage(message));
+            dispatch(addMessage({
+                ...message,
+                sender: message.sender === 'user' ? 'user' : 'psychologist'
+            }));
         });
 
         chatAPI.subscribeToTyping((typing) => {
@@ -41,22 +45,36 @@ export default function ChatScreen() {
     }, [dispatch]);
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
-            <CustomText variant="ezH2Semi">Чат</CustomText>
-            <SafeAreaView style={s.container}>
+        <SafeAreaView style={s.container} edges={['top', 'left', 'right']}>
+            <Animated.View
+                entering={FadeIn.duration(500)}
+                style={s.header}
+            >
+                <CustomText variant="ezH3Semi">
+                    Чат з психологом
+                </CustomText>
                 {!isConnected && (
-                    <View style={s.connectionStatus}>
-                        <Text>Відключено від сервера</Text>
-                    </View>
+                    <CustomText
+                        variant="ezSubtitleRegular"
+                        style={s.connectionStatus}
+                    >
+                        Відключено від сервера
+                    </CustomText>
                 )}
+            </Animated.View>
+
+            <View style={s.chatContainer}>
                 <MessageList/>
                 {isTyping && (
-                    <Text style={s.typingIndicator}>
+                    <CustomText
+                        variant="ezSubtitleRegular"
+                        style={s.typingIndicator}
+                    >
                         Психолог набирає повідомлення...
-                    </Text>
+                    </CustomText>
                 )}
                 <MessageInput/>
-            </SafeAreaView>
-        </View>
+            </View>
+        </SafeAreaView>
     );
 }
