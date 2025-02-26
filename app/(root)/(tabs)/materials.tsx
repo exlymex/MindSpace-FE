@@ -1,10 +1,15 @@
-import { View } from 'react-native';
-import { CustomText } from '@/components';
-
+import React from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useStyles } from '@/hooks';
+import { MaterialsList, MaterialsHeader } from '@/features/materials/components';
+import {styles} from '@/features/materials/styles';
 export default function MaterialsScreen() {
+  const { s } = useStyles(styles);
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
-      <CustomText variant="ezH2Semi">Матеріали</CustomText>
-    </View>
+    <SafeAreaView style={s.container}>
+      <MaterialsHeader />
+      <MaterialsList />
+    </SafeAreaView>
   );
 } 
