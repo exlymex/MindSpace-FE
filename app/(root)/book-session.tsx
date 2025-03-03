@@ -6,10 +6,10 @@ import {useStyles} from '@/hooks';
 import {CustomText} from '@/components';
 import {Button, IconButton, TextInput} from 'react-native-paper';
 import {useBookSessionMutation} from '@/features/sessions/api';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import {format} from 'date-fns';
 import {uk} from 'date-fns/locale';
 import {AppTheme} from '@/theme';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 const styles = (theme: AppTheme) => StyleSheet.create({
     container: {
@@ -79,6 +79,20 @@ export default function BookSessionScreen() {
         }
     };
 
+    const handleConfirmDate = (selectedDate: Date) => {
+        setShowDatePicker(false);
+        if (selectedDate) {
+            setDate(selectedDate);
+        }
+    };
+
+    const handleConfirmTime = (selectedTime: Date) => {
+        setShowTimePicker(false);
+        if (selectedTime) {
+            setTime(selectedTime);
+        }
+    };
+
     return (
         <SafeAreaView style={s.container}>
             <View style={s.header}>
@@ -133,31 +147,21 @@ export default function BookSessionScreen() {
                 </Button>
             </ScrollView>
 
-            {showDatePicker && (
-                <DateTimePicker
-                    value={date}
-                    mode="date"
-                    onChange={(event, selectedDate) => {
-                        setShowDatePicker(false);
-                        if (selectedDate) {
-                            setDate(selectedDate);
-                        }
-                    }}
-                />
-            )}
+            <DateTimePickerModal
+                isVisible={showDatePicker}
+                mode="date"
+                onConfirm={handleConfirmDate}
+                onCancel={() => setShowDatePicker(false)}
+                date={date}
+            />
 
-            {showTimePicker && (
-                <DateTimePicker
-                    value={time}
-                    mode="time"
-                    onChange={(event, selectedDate) => {
-                        setShowTimePicker(false);
-                        if (selectedDate) {
-                            setTime(selectedDate);
-                        }
-                    }}
-                />
-            )}
+            <DateTimePickerModal
+                isVisible={showTimePicker}
+                mode="time"
+                onConfirm={handleConfirmTime}
+                onCancel={() => setShowTimePicker(false)}
+                date={time}
+            />
         </SafeAreaView>
     );
 } 

@@ -7,18 +7,27 @@ import {authReducer} from "./slices/authSlice.ts";
 import chatReducer from './slices/chatSlice';
 import { notificationsReducer } from './slices/notificationsSlice';
 import { sessionsApi } from '@/features/sessions/api';
+import { psychologistsApi } from '@/features/psychologists/api';
+import { materialsApi } from '@/features/materials/api';
 
 export const store = configureStore({
     reducer: {
         [authApi.reducerPath]: authApi.reducer,
         [sessionsApi.reducerPath]: sessionsApi.reducer,
+        [psychologistsApi.reducerPath]: psychologistsApi.reducer,
+        [materialsApi.reducerPath]: materialsApi.reducer,
         theme: themeReducer,
         auth: authReducer,
         chat: chatReducer,
         notifications: notificationsReducer,
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(authApi.middleware, sessionsApi.middleware),
+        getDefaultMiddleware().concat(
+            authApi.middleware,
+            sessionsApi.middleware,
+            psychologistsApi.middleware,
+            materialsApi.middleware
+        ),
     devTools: true,
 });
 

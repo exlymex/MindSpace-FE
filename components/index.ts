@@ -13,3 +13,6 @@ export {ControlledInput} from './react-hook-form/ControlledInput/ControlledInput
 export {ControlledPicker} from './react-hook-form/ControlledPicker/ControlledPicker';
 export {ControlledCheckbox} from './react-hook-form/ControlledCheckbox/ControlledCheckbox';
 export {ControlledPassword} from './react-hook-form/ControlledPassword/ContolledPassword';
+
+export { LoadingIndicator } from './LoadingIndicator/LoadingIndicator';
+export { ErrorMessage } from './ErrorMessage/ErrorMessage';

@@ -1,48 +1,82 @@
-import React, { useState } from 'react';
-import { View, Modal, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { useStyles } from '@/hooks';
-import { CustomText } from '@/components';
-import { Button, TextInput, IconButton, Menu, Divider } from 'react-native-paper';
-import { useBookSessionMutation } from '@/features/sessions/api';
-import { useGetPsychologistsQuery } from '@/features/psychologists/api';
+import React, {useEffect, useState} from 'react';
+import {Alert, FlatList, Modal, TouchableOpacity, View} from 'react-native';
+import {useStyles} from '@/hooks';
+import {CustomText, ErrorMessage, LoadingIndicator} from '@/components';
+import {Button, Card, Chip, IconButton, TextInput} from 'react-native-paper';
+import {useBookSessionMutation} from '@/features/sessions/api';
+import {useGetPsychologistsQuery} from '@/features/psychologists/api';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { format } from 'date-fns';
-import { uk } from 'date-fns/locale';
-import { styles } from './styles';
+import {format, addMinutes, isAfter, isBefore, startOfDay, endOfDay} from 'date-fns';
+import {uk} from 'date-fns/locale';
+import {styles} from './styles';
 
 interface BookSessionModalProps {
     visible: boolean;
     onClose: () => void;
 }
 
-export const BookSessionModal: React.FC<BookSessionModalProps> = ({ visible, onClose }) => {
-    const { s, theme } = useStyles(styles);
-    const [bookSession, { isLoading }] = useBookSessionMutation();
-    const { data: psychologists, isLoading: isLoadingPsychologists } = useGetPsychologistsQuery();
+// Доступні слоти часу (можна винести в окремий конфіг)
+const TIME_SLOTS = [
+    '09:00', '10:00', '11:00', '12:00', 
+    '13:00', '14:00', '15:00', '16:00', '17:00'
+];
 
-    const [date, setDate] = useState(new Date());
-    const [time, setTime] = useState(new Date());
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [showTimePicker, setShowTimePicker] = useState(false);
+// Доступні тривалості сесій
+const DURATION_OPTIONS = [
+    { label: '30 хвилин', value: '30' },
+    { label: '45 хвилин', value: '45' },
+    { label: '60 хвилин', value: '60' },
+    { label: '90 хвилин', value: '90' },
+];
+
+export const BookSessionModal: React.FC<BookSessionModalProps> = ({visible, onClose}) => {
+    const {s, theme} = useStyles(styles);
+    const [bookSession, {isLoading: isBookingLoading}] = useBookSessionMutation();
+    const {data: psychologists, isLoading: isLoadingPsychologists, error: psychologistsError} = useGetPsychologistsQuery();
+
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
     const [duration, setDuration] = useState('60');
     const [selectedPsychologist, setSelectedPsychologist] = useState<{ id: string; name: string } | null>(null);
-    const [menuVisible, setMenuVisible] = useState(false);
+    const [step, setStep] = useState(1); // 1: вибір психолога, 2: вибір дати і часу
 
+    // Перевірка, чи можна перейти до наступного кроку
+    const canProceedToStep2 = selectedPsychologist !== null;
+    const canBookSession = selectedTimeSlot !== null && selectedPsychologist !== null;
+
+    // Обробник вибору психолога
+    const handleSelectPsychologist = (psych: any) => {
+        setSelectedPsychologist({
+            id: psych.id,
+            name: psych.username
+        });
+    };
+
+    // Обробник вибору слоту часу
+    const handleSelectTimeSlot = (slot: string) => {
+        setSelectedTimeSlot(slot);
+    };
+
+    // Обробник бронювання сесії
     const handleBookSession = async () => {
-        if (!selectedPsychologist) {
-            Alert.alert('Помилка', 'Будь ласка, оберіть психолога');
+        if (!selectedPsychologist || !selectedTimeSlot) {
+            Alert.alert('Помилка', 'Будь ласка, оберіть психолога, дату та час');
             return;
         }
 
         try {
+            const [hours, minutes] = selectedTimeSlot.split(':').map(Number);
+            const sessionTime = new Date(selectedDate);
+            sessionTime.setHours(hours, minutes, 0, 0);
+
             await bookSession({
-                psychologist_id: parseInt(selectedPsychologist.id),
-                date: format(date, 'yyyy-MM-dd'),
-                time: format(time, 'HH:mm'),
+                psychologistId: selectedPsychologist.id,
+                date: format(selectedDate, 'yyyy-MM-dd'),
+                time: format(sessionTime, 'HH:mm'),
                 duration: parseInt(duration),
-                price: 800,
+                price: 800, // Можна зробити динамічним в залежності від психолога і тривалості
             }).unwrap();
-            
+
             onClose();
             Alert.alert('Успіх', 'Сесію успішно заброньовано');
         } catch (error) {
@@ -51,122 +85,313 @@ export const BookSessionModal: React.FC<BookSessionModalProps> = ({ visible, onC
         }
     };
 
+    // Перевірка, чи доступний слот часу (можна додати перевірку з бекенду)
+    const isTimeSlotAvailable = (slot: string) => {
+        // Тут можна додати логіку перевірки доступності слоту
+        // Наприклад, запит до API для перевірки, чи вільний цей час у психолога
+        return true;
+    };
+
+    // Рендер списку психологів
+    const renderPsychologists = () => {
+        if (isLoadingPsychologists) {
+            return <LoadingIndicator />;
+        }
+
+        if (psychologistsError) {
+            return <ErrorMessage message="Помилка завантаження психологів" />;
+        }
+
+        if (!psychologists || psychologists.length === 0) {
+            return <ErrorMessage message="Психологів не знайдено" />;
+        }
+
+        return (
+            <FlatList
+                data={psychologists}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({item}) => (
+                    <Card
+                        style={[
+                            s.psychologistCard,
+                            selectedPsychologist?.id === item.id.toString() && s.selectedPsychologistCard
+                        ]}
+                        onPress={() => handleSelectPsychologist(item)}
+                    >
+                        <Card.Content>
+                            <CustomText variant="ezH4Semi">
+                                {item.username}
+                            </CustomText>
+                            {item.bio && (
+                                <CustomText variant="ezSubtitleRegular" style={s.bio}>
+                                    {item.bio.length > 100 ? `${item.bio.substring(0, 100)}...` : item.bio}
+                                </CustomText>
+                            )}
+                        </Card.Content>
+                    </Card>
+                )}
+                contentContainerStyle={s.psychologistsList}
+            />
+        );
+    };
+
+    // Рендер слотів часу
+    const renderTimeSlots = () => {
+        return (
+            <View style={s.timeSlotsContainer}>
+                <CustomText variant="ezH4Semi" style={s.sectionTitle}>
+                    Час сесії
+                </CustomText>
+                <View style={s.timeSlotsContent}>
+                    {TIME_SLOTS.map((slot) => {
+                        const isSelected = selectedTimeSlot === slot;
+                        // Тут можна додати логіку для визначення недоступних слотів
+                        const isDisabled = false;
+
+                        return (
+                            <Chip
+                                key={slot}
+                                style={[
+                                    s.timeSlotChip,
+                                    isSelected && s.selectedTimeSlotChip,
+                                    isDisabled && s.disabledTimeSlotChip
+                                ]}
+                                textStyle={[
+                                    s.timeSlotText,
+                                    isSelected && s.selectedTimeSlotText
+                                ]}
+                                disabled={isDisabled}
+                                onPress={() => handleSelectTimeSlot(slot)}
+                            >
+                                {slot}
+                            </Chip>
+                        );
+                    })}
+                </View>
+            </View>
+        );
+    };
+
+    // Рендер опцій тривалості
+    const renderDurationOptions = () => {
+        return (
+            <View style={s.durationContainer}>
+                <CustomText variant="ezH4Semi" style={s.sectionTitle}>
+                    Тривалість сесії
+                </CustomText>
+                <FlatList
+                    data={DURATION_OPTIONS}
+                    keyExtractor={(item) => item.value}
+                    renderItem={({item}) => (
+                        <Chip
+                            style={[
+                                s.durationChip,
+                                duration === item.value && s.selectedDurationChip
+                            ]}
+                            textStyle={[
+                                s.durationText,
+                                duration === item.value && s.selectedDurationText
+                            ]}
+                            onPress={() => setDuration(item.value)}
+                        >
+                            {item.label}
+                        </Chip>
+                    )}
+                    horizontal
+                    contentContainerStyle={s.durationContent}
+                />
+            </View>
+        );
+    };
+
+    // Рендер календаря для вибору дати
+    const renderDatePicker = () => {
+        // Отримуємо наступні 30 днів для вибору
+        const nextDays = getNextDays(30);
+        
+        return (
+            <View style={s.dateContainer}>
+                <CustomText variant="ezH4Semi" style={s.sectionTitle}>
+                    Дата сесії
+                </CustomText>
+                
+                <View style={s.calendarContainer}>
+                    <FlatList
+                        data={nextDays}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        keyExtractor={(item) => item.toISOString()}
+                        renderItem={({item}) => {
+                            const isSelected = 
+                                item.getDate() === selectedDate.getDate() && 
+                                item.getMonth() === selectedDate.getMonth() && 
+                                item.getFullYear() === selectedDate.getFullYear();
+                            
+                            const isToday = 
+                                item.getDate() === new Date().getDate() && 
+                                item.getMonth() === new Date().getMonth() && 
+                                item.getFullYear() === new Date().getFullYear();
+                            
+                            return (
+                                <TouchableOpacity
+                                    style={[
+                                        s.dayItem,
+                                        isSelected && s.selectedDayItem,
+                                        isToday && s.todayItem
+                                    ]}
+                                    onPress={() => setSelectedDate(item)}
+                                >
+                                    <CustomText 
+                                        variant="ezSubtitleMedium" 
+                                        style={[
+                                            s.dayName,
+                                            isSelected && s.selectedDayText
+                                        ]}
+                                    >
+                                        {format(item, 'EEE', {locale: uk})}
+                                    </CustomText>
+                                    <CustomText 
+                                        variant="ezH4Semi" 
+                                        style={[
+                                            s.dayNumber,
+                                            isSelected && s.selectedDayText
+                                        ]}
+                                    >
+                                        {format(item, 'd')}
+                                    </CustomText>
+                                    <CustomText 
+                                        variant="ezCaptionMedium" 
+                                        style={[
+                                            s.monthName,
+                                            isSelected && s.selectedDayText
+                                        ]}
+                                    >
+                                        {format(item, 'MMM', {locale: uk})}
+                                    </CustomText>
+                                </TouchableOpacity>
+                            );
+                        }}
+                        contentContainerStyle={s.daysContainer}
+                    />
+                </View>
+                
+                <View style={s.selectedDateContainer}>
+                    <IconButton
+                        icon="calendar"
+                        size={20}
+                        iconColor={theme.colors.ezPrimary}
+                        style={s.dateIcon}
+                    />
+                    <CustomText variant="ezSubtitleRegular" style={s.selectedDateText}>
+                        Обрана дата: {format(selectedDate, 'dd MMMM yyyy', {locale: uk})}
+                    </CustomText>
+                </View>
+            </View>
+        );
+    };
+
+    // Функція для отримання наступних N днів
+    const getNextDays = (days: number) => {
+        const result = [];
+        const today = new Date();
+        
+        for (let i = 0; i < days; i++) {
+            const date = new Date();
+            date.setDate(today.getDate() + i);
+            result.push(date);
+        }
+        
+        return result;
+    };
+
     return (
         <Modal
             visible={visible}
             animationType="slide"
-            transparent={true}
+            transparent
             onRequestClose={onClose}
         >
             <View style={s.modalContainer}>
                 <View style={s.modalContent}>
                     <View style={s.header}>
-                        <IconButton icon="close" onPress={onClose} />
+                        {step === 2 ? (
+                            <IconButton icon="arrow-left" onPress={() => setStep(1)} />
+                        ) : (
+                            <IconButton icon="close" onPress={onClose} />
+                        )}
                         <CustomText variant="ezH4Semi" style={s.title}>
-                            Бронювання сесії
+                            {step === 1 ? 'Оберіть психолога' : 'Бронювання сесії'}
                         </CustomText>
-                        <View style={{ width: theme.scale(40) }} />
+                        <View style={{width: theme.scale(40)}} />
                     </View>
 
-                    <ScrollView style={s.form}>
-                        <Menu
-                            visible={menuVisible}
-                            onDismiss={() => setMenuVisible(false)}
-                            anchor={
-                                <TouchableOpacity
-                                    style={s.psychologistButton}
-                                    onPress={() => setMenuVisible(true)}
-                                >
-                                    <CustomText>
-                                        {selectedPsychologist 
-                                            ? `Психолог: ${selectedPsychologist.name}` 
-                                            : 'Оберіть психолога'}
-                                    </CustomText>
-                                </TouchableOpacity>
-                            }
-                        >
+                    {step === 1 ? (
+                        // Крок 1: Вибір психолога
+                        <View style={s.stepContainer}>
                             {isLoadingPsychologists ? (
-                                <Menu.Item title="Завантаження..." />
+                                <LoadingIndicator />
                             ) : psychologists && psychologists.length > 0 ? (
-                                psychologists.map((psych) => (
-                                    <Menu.Item
-                                        key={psych.id}
-                                        title={psych.username}
-                                        onPress={() => {
-                                            setSelectedPsychologist({
-                                                id: psych.id,
-                                                name: psych.username
-                                            });
-                                            setMenuVisible(false);
-                                        }}
-                                    />
-                                ))
+                                <FlatList
+                                    data={psychologists}
+                                    keyExtractor={(item) => item.id.toString()}
+                                    renderItem={({item}) => (
+                                        <Card
+                                            style={[
+                                                s.psychologistCard,
+                                                selectedPsychologist?.id === item.id.toString() && s.selectedPsychologistCard
+                                            ]}
+                                            onPress={() => handleSelectPsychologist(item)}
+                                        >
+                                            <Card.Content>
+                                                <CustomText variant="ezH4Semi">
+                                                    {item.username}
+                                                </CustomText>
+                                                {item.bio && (
+                                                    <CustomText variant="ezSubtitleRegular" style={s.bio}>
+                                                        {item.bio.length > 100 ? `${item.bio.substring(0, 100)}...` : item.bio}
+                                                    </CustomText>
+                                                )}
+                                            </Card.Content>
+                                        </Card>
+                                    )}
+                                    contentContainerStyle={s.psychologistsList}
+                                />
                             ) : (
-                                <Menu.Item title="Психологів не знайдено" />
+                                <ErrorMessage message="Психологів не знайдено" />
                             )}
-                        </Menu>
 
-                        <TouchableOpacity
-                            style={s.dateButton}
-                            onPress={() => setShowDatePicker(true)}
-                        >
-                            <CustomText>
-                                Дата: {format(date, 'dd MMMM yyyy', { locale: uk })}
-                            </CustomText>
-                        </TouchableOpacity>
+                            <Button
+                                mode="contained"
+                                onPress={() => setStep(2)}
+                                style={s.nextButton}
+                                disabled={!canProceedToStep2}
+                            >
+                                Далі
+                            </Button>
+                        </View>
+                    ) : (
+                        // Крок 2: Вибір дати і часу
+                        <View style={s.stepContainer}>
+                            <View style={s.psychologistInfo}>
+                                <CustomText variant="ezH4Semi">
+                                    Психолог: {selectedPsychologist?.name}
+                                </CustomText>
+                            </View>
 
-                        <TouchableOpacity
-                            style={s.timeButton}
-                            onPress={() => setShowTimePicker(true)}
-                        >
-                            <CustomText>
-                                Час: {format(time, 'HH:mm')}
-                            </CustomText>
-                        </TouchableOpacity>
+                            {renderDatePicker()}
+                            {renderTimeSlots()}
+                            {renderDurationOptions()}
 
-                        <TextInput
-                            label="Тривалість (хвилин)"
-                            value={duration}
-                            onChangeText={setDuration}
-                            keyboardType="numeric"
-                            style={s.input}
-                        />
-
-                        <Button
-                            mode="contained"
-                            onPress={handleBookSession}
-                            loading={isLoading}
-                            style={s.submitButton}
-                            disabled={!selectedPsychologist}
-                        >
-                            Забронювати сесію
-                        </Button>
-                    </ScrollView>
-
-                    {showDatePicker && (
-                        <DateTimePicker
-                            value={date}
-                            mode="date"
-                            onChange={(event, selectedDate) => {
-                                setShowDatePicker(false);
-                                if (selectedDate) {
-                                    setDate(selectedDate);
-                                }
-                            }}
-                        />
-                    )}
-
-                    {showTimePicker && (
-                        <DateTimePicker
-                            value={time}
-                            mode="time"
-                            onChange={(event, selectedDate) => {
-                                setShowTimePicker(false);
-                                if (selectedDate) {
-                                    setTime(selectedDate);
-                                }
-                            }}
-                        />
+                            <Button
+                                mode="contained"
+                                onPress={handleBookSession}
+                                loading={isBookingLoading}
+                                style={s.submitButton}
+                                disabled={!canBookSession}
+                            >
+                                Забронювати сесію
+                            </Button>
+                        </View>
                     )}
                 </View>
             </View>
