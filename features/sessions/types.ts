@@ -11,4 +11,12 @@ export interface Session {
   status: SessionStatus;
   notes?: string;
   price: number;
+}
+
+export interface SessionCreate {
+  psychologistId: string;
+  date: string; // формат "YYYY-MM-DD"
+  time: string; // формат "HH:mm"
+  duration: number;
+  price: number;
 } 

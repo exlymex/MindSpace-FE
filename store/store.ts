@@ -6,19 +6,20 @@ import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 import {authReducer} from "./slices/authSlice.ts";
 import chatReducer from './slices/chatSlice';
 import { notificationsReducer } from './slices/notificationsSlice';
+import { sessionsApi } from '@/features/sessions/api';
 
 export const store = configureStore({
     reducer: {
         [authApi.reducerPath]: authApi.reducer,
+        [sessionsApi.reducerPath]: sessionsApi.reducer,
         theme: themeReducer,
         auth: authReducer,
         chat: chatReducer,
         notifications: notificationsReducer,
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(authApi.middleware),
+        getDefaultMiddleware().concat(authApi.middleware, sessionsApi.middleware),
     devTools: true,
-
 });
 
 setupListeners(store.dispatch);
