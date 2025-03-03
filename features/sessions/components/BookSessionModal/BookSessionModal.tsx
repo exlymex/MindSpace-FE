@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, FlatList, Modal, TouchableOpacity, View} from 'react-native';
+import {Alert, FlatList, Modal, ScrollView, TouchableOpacity, View} from 'react-native';
 import {useStyles} from '@/hooks';
 import {CustomText, ErrorMessage, LoadingIndicator} from '@/components';
 import {Button, Card, Chip, IconButton, TextInput} from 'react-native-paper';
@@ -65,23 +65,26 @@ export const BookSessionModal: React.FC<BookSessionModalProps> = ({visible, onCl
         }
 
         try {
-            const [hours, minutes] = selectedTimeSlot.split(':').map(Number);
-            const sessionTime = new Date(selectedDate);
-            sessionTime.setHours(hours, minutes, 0, 0);
-
-            await bookSession({
-                psychologistId: selectedPsychologist.id,
+            // Створюємо об'єкт з даними для бронювання
+            const sessionData = {
+                psychologist_id: parseInt(selectedPsychologist.id),
                 date: format(selectedDate, 'yyyy-MM-dd'),
-                time: format(sessionTime, 'HH:mm'),
+                time: selectedTimeSlot,
                 duration: parseInt(duration),
-                price: 800, // Можна зробити динамічним в залежності від психолога і тривалості
-            }).unwrap();
+                price: 800, // Тимчасово хардкодимо ціну
+            };
 
+            console.log('Sending session data:', sessionData); // Для дебагу
+
+            // Відправляємо запит на бронювання
+            await bookSession(sessionData).unwrap();
+            
+            // Закриваємо модальне вікно і показуємо повідомлення про успіх
             onClose();
             Alert.alert('Успіх', 'Сесію успішно заброньовано');
         } catch (error) {
             console.error('Failed to book session:', error);
-            Alert.alert('Помилка', 'Не вдалося забронювати сесію');
+            Alert.alert('Помилка', 'Не вдалося забронювати сесію. Спробуйте ще раз.');
         }
     };
 
@@ -371,7 +374,7 @@ export const BookSessionModal: React.FC<BookSessionModalProps> = ({visible, onCl
                         </View>
                     ) : (
                         // Крок 2: Вибір дати і часу
-                        <View style={s.stepContainer}>
+                        <ScrollView style={s.stepContainer} contentContainerStyle={s.scrollContent}>
                             <View style={s.psychologistInfo}>
                                 <CustomText variant="ezH4Semi">
                                     Психолог: {selectedPsychologist?.name}
@@ -391,7 +394,7 @@ export const BookSessionModal: React.FC<BookSessionModalProps> = ({visible, onCl
                             >
                                 Забронювати сесію
                             </Button>
-                        </View>
+                        </ScrollView>
                     )}
                 </View>
             </View>

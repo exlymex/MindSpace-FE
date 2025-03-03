@@ -7,6 +7,7 @@ export {CustomModal} from './common/CustomModal/CustomModal';
 export {InputPassword} from './common/InputPassword/InputPassword';
 export {InfoTextField} from './common/InfoTextField/InfoTextField';
 export {CheckboxWithLabel} from './common/CheckboxWithLabel/CheckboxWithLabel';
+export {CustomBadge} from './common/CustomBadge/CustomBadge';
 
 export {ControlledInfoTextField} from './react-hook-form/ControlledInfoTextField/ControlledInfoTextField';
 export {ControlledInput} from './react-hook-form/ControlledInput/ControlledInput';

@@ -14,7 +14,7 @@ export interface Session {
 }
 
 export interface SessionCreate {
-  psychologistId: string;
+  psychologist_id: number;
   date: string; // формат "YYYY-MM-DD"
   time: string; // формат "HH:mm"
   duration: number;

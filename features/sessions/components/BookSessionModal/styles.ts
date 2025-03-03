@@ -178,4 +178,7 @@ export const styles = (theme: AppTheme) => StyleSheet.create({
     submitButton: {
         marginTop: theme.scale(20),
     },
+    scrollContent: {
+        paddingBottom: theme.scale(30),
+    },
 }); 

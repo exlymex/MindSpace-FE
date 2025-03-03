@@ -46,7 +46,9 @@ export const styles = (theme: AppTheme) =>
     statusBadge: {
       borderRadius: theme.scale(12),
       paddingHorizontal: theme.scale(8),
-      height: theme.scale(24),
+      paddingVertical: theme.scale(4),
+
+      // height: theme.scale(24),
     },
     content: {
       padding: theme.scale(16),
@@ -107,7 +109,7 @@ export const styles = (theme: AppTheme) =>
       borderLeftColor: theme.colors.ezGrayBackground,
     },
     cancelButtonText: {
-      color: theme.colors.ezError,
+      color: theme.colors.ezRed,
       marginLeft: theme.scale(8),
     },
   }); 

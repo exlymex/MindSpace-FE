@@ -2,10 +2,10 @@ import React, {FC} from 'react';
 import {Alert, Image, TouchableOpacity, View} from 'react-native';
 import {useStyles} from '@/hooks';
 import {styles} from './styles';
-import {CustomText} from '@/components';
+import {CustomText, CustomBadge} from '@/components';
 import {Session} from '@/features/sessions/types';
 import {useRouter} from 'expo-router';
-import {Badge, IconButton} from 'react-native-paper';
+import {IconButton} from 'react-native-paper';
 import {format} from 'date-fns';
 import {uk} from 'date-fns/locale';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
@@ -21,6 +21,9 @@ export const SessionCard: FC<SessionCardProps> = ({session}) => {
     const [cancelSession, {isLoading: isCancelling}] = useCancelSessionMutation();
 
     const formattedDate = format(new Date(session.date), 'dd MMMM yyyy', {locale: uk});
+    
+    // Дефолтне зображення для психолога
+    const defaultAvatarUri = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
 
     const getStatusColor = () => {
         switch (session.status) {
@@ -77,22 +80,26 @@ export const SessionCard: FC<SessionCardProps> = ({session}) => {
         >
             <View style={s.header}>
                 <View style={s.psychologistInfo}>
-                    <Image source={{uri: session.psychologistAvatar}} style={s.avatar}/>
+                    <Image 
+                        source={{uri: session.psychologistAvatar || defaultAvatarUri}} 
+                        style={s.avatar}
+                        defaultSource={{uri: defaultAvatarUri}}
+                    />
                     <View>
                         <CustomText variant="ezSubtitleMedium" style={s.psychologistName}>
                             {session.psychologistName}
                         </CustomText>
-                        <Badge style={[s.statusBadge, {backgroundColor: getStatusColor()}]}>
-                            {getStatusText()}
-                        </Badge>
+                        <CustomBadge 
+                            text={getStatusText()} 
+                            backgroundColor={getStatusColor()}
+                        />
                     </View>
                 </View>
                 <IconButton
                     icon="dots-vertical"
                     size={20}
                     iconColor={theme.colors.ezGrayDark}
-                    onPress={() => {
-                    }}
+                    onPress={() => {}}
                 />
             </View>
 
@@ -123,14 +130,6 @@ export const SessionCard: FC<SessionCardProps> = ({session}) => {
                     </View>
                 </View>
 
-                <View style={s.priceContainer}>
-                    <CustomText variant="ezSubtitleRegular" style={s.priceLabel}>
-                        Вартість:
-                    </CustomText>
-                    <CustomText variant="ezSubtitleMedium" style={s.price}>
-                        {session.price} грн
-                    </CustomText>
-                </View>
             </View>
 
             {session.status === 'upcoming' && (

@@ -49,12 +49,12 @@ export const sessionsApi = createApi({
             }),
             invalidatesTags: ['Sessions'],
         }),
-        cancelSession: builder.mutation<Session, string>({
+        cancelSession: builder.mutation<void, string>({
             query: (id) => ({
-                url: `/${id}/cancel`,
+                url: `/${id}`,
                 method: 'DELETE',
             }),
-            invalidatesTags: (result, error, id) => [{type: 'Sessions', id}, 'Sessions'],
+            invalidatesTags: ['Sessions'],
         }),
         updateSession: builder.mutation<Session, { id: string; data: Partial<Session> }>({
             query: ({id, data}) => ({
