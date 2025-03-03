@@ -66,7 +66,7 @@ export default function BookSessionScreen() {
     const handleBookSession = async () => {
         try {
             await bookSession({
-                psychologistId,
+                psychologist_id: Number(psychologistId),
                 date: format(date, 'yyyy-MM-dd'),
                 time: format(time, 'HH:mm'),
                 duration: parseInt(duration),

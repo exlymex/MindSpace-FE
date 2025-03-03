@@ -4,23 +4,21 @@ import { IconButton } from 'react-native-paper';
 import { CustomText } from '@/components';
 import { useStyles } from '@/hooks';
 import { styles } from './styles';
-import { useRouter } from 'expo-router';
-import { useAppDispatch } from '@/store/store';
-import { logout } from '@/store/slices/authSlice';
 import Animated, { FadeIn } from 'react-native-reanimated';
+import { useRouter } from 'expo-router';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface HeaderProps {
   username?: string;
+  avatarUrl?: string | null;
 }
 
-export const Header: FC<HeaderProps> = ({ username = 'Користувач' }) => {
+export const Header: FC<HeaderProps> = ({ username = 'Користувач', avatarUrl }) => {
   const { s, theme } = useStyles(styles);
   const router = useRouter();
-  const dispatch = useAppDispatch();
 
-  const handleLogout = () => {
-    dispatch(logout());
-    router.replace('/login');
+  const handleProfilePress = () => {
+    router.push('/(root)/(tabs)/profile');
   };
 
   return (
@@ -30,11 +28,21 @@ export const Header: FC<HeaderProps> = ({ username = 'Користувач' }) =
     >
       <View style={s.rightContainer}>
         <IconButton
-          icon="logout"
+          icon={({ size, color }) => (
+            avatarUrl ? (
+              <Animated.Image 
+                source={{ uri: avatarUrl }} 
+                style={s.avatarImage} 
+                entering={FadeIn.duration(500)}
+              />
+            ) : (
+              <MaterialCommunityIcons name="account-circle" size={size} color={color} />
+            )
+          )}
           iconColor={theme.colors.ezPrimary}
-          size={24}
-          onPress={handleLogout}
-          style={s.logoutButton}
+          size={28}
+          onPress={handleProfilePress}
+          style={s.profileButton}
         />
       </View>
       <CustomText variant="ezH2Semi" style={s.greeting}>
