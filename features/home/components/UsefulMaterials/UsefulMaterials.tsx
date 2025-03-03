@@ -1,112 +1,126 @@
 import React, { FC } from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import Animated, { 
   FadeInDown,
   useAnimatedStyle, 
   withSpring,
   withSequence,
-  withDelay,
   SlideInRight,
-  BounceIn,
   ZoomIn
 } from 'react-native-reanimated';
 import { useStyles } from '@/hooks';
-import { styles } from './styles.ts';
-import { useNavigation } from '@react-navigation/native';
+import { styles } from './styles';
+import { useRouter } from 'expo-router';
+import { CustomText } from '@/components';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
-const AnimatedText = Animated.createAnimatedComponent(Text);
 
+// Оновлені моковані дані з більш якісним контентом
 const materials = [
   {
     id: '1',
     title: 'Як впоратися зі стресом',
-    description: 'Практичні поради для подолання стресу',
+    description: 'Практичні поради та вправи для подолання стресу в повсякденному житті',
     image: { uri: 'https://img.freepik.com/free-vector/anxiety-concept-illustration_114360-8074.jpg' },
+    type: 'article'
   },
   {
     id: '2',
-    title: 'Техніки медитації',
-    description: 'Прості медитативні практики',
+    title: 'Техніки медитації для початківців',
+    description: 'Прості медитативні практики для покращення психічного здоров\'я',
     image: { uri: 'https://img.freepik.com/free-vector/meditation-concept-illustration_114360-7898.jpg' },
+    type: 'video'
   },
-  // Додайте більше матеріалів за потреби
+  {
+    id: '3',
+    title: 'Емоційний інтелект',
+    description: 'Як розвинути емоційний інтелект та покращити стосунки з оточуючими',
+    image: { uri: 'https://img.freepik.com/free-vector/mental-health-awareness-concept_23-2148514643.jpg' },
+    type: 'book'
+  },
 ];
 
 export const UsefulMaterials: FC = () => {
   const { s, theme } = useStyles(styles);
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const cardAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { 
-        scale: withSequence(
-          withSpring(1.02),
-          withSpring(1)
-        )
-      }
-    ],
+    transform: [{ scale: withSpring(1) }],
   }));
 
-  const titleAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { 
-        translateY: withSpring(0, {
-          damping: 12,
-          stiffness: 100
-        })
-      }
-    ],
-    opacity: withSpring(1)
-  }));
+  const getIconName = (type: string) => {
+    switch (type) {
+      case 'video': return 'play-circle-outline';
+      case 'book': return 'book-open-page-variant-outline';
+      case 'podcast': return 'headphones';
+      default: return 'file-document-outline';
+    }
+  };
+
+  const handleMaterialPress = (id: string) => {
+    // Навігація до деталей матеріалу
+    router.push(`/materials/${id}`);
+  };
 
   return (
     <Animated.View 
-      entering={ZoomIn.duration(1000)}
+      entering={ZoomIn.duration(800)}
       style={s.container}
     >
-      <AnimatedText 
-        entering={BounceIn.duration(1000)}
-        style={[s.title, titleAnimatedStyle]}
-      >
+      <CustomText variant="ezH4Semi" style={s.sectionTitle}>
         Корисні матеріали
-      </AnimatedText>
+      </CustomText>
+      
       <View style={s.materialsContainer}>
         {materials.map((material, index) => (
           <AnimatedTouchableOpacity 
             key={material.id}
             entering={SlideInRight
-              .delay(index * 400)
+              .delay(index * 200)
               .springify()
               .damping(12)}
             style={[s.materialCard, cardAnimatedStyle]}
-            onPress={() => {
-              // Анімація при натисканні
-              cardAnimatedStyle.value = withSequence(
-                withSpring(0.95),
-                withSpring(1)
-              );
-              navigation.navigate('Material', { id: material.id });
-            }}
+            onPress={() => handleMaterialPress(material.id)}
+            activeOpacity={0.8}
           >
             <Animated.Image 
-              entering={FadeInDown.delay(index * 500).springify()}
+              entering={FadeInDown.delay(index * 300).springify()}
               source={material.image} 
               style={s.materialImage} 
             />
+            
             <View style={s.materialContent}>
-              <AnimatedText 
-                entering={FadeInDown.delay(index * 600)}
-                style={s.materialTitle}
-              >
-                {material.title}
-              </AnimatedText>
-              <AnimatedText 
-                entering={FadeInDown.delay(index * 700)}
-                style={s.materialDescription}
-              >
+              <View style={s.materialHeader}>
+                <CustomText variant="ezSubtitleSemi" style={s.materialTitle} numberOfLines={2}>
+                  {material.title}
+                </CustomText>
+              </View>
+              
+              <CustomText variant="ezSubtitleRegular" style={s.materialDescription} numberOfLines={2}>
                 {material.description}
-              </AnimatedText>
+              </CustomText>
+              
+              <View style={s.materialFooter}>
+                <View style={s.materialType}>
+                  <MaterialCommunityIcons 
+                    name={getIconName(material.type)} 
+                    size={16} 
+                    color={theme.colors.ezPrimary} 
+                  />
+                  <CustomText variant="ezCaptionMedium" style={s.materialTypeText}>
+                    {material.type === 'article' ? 'Стаття' : 
+                     material.type === 'video' ? 'Відео' : 
+                     material.type === 'book' ? 'Книга' : 'Подкаст'}
+                  </CustomText>
+                </View>
+                
+                <MaterialCommunityIcons 
+                  name="chevron-right" 
+                  size={20} 
+                  color={theme.colors.ezPrimary} 
+                />
+              </View>
             </View>
           </AnimatedTouchableOpacity>
         ))}
