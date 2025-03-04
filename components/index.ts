@@ -17,3 +17,5 @@ export {ControlledPassword} from './react-hook-form/ControlledPassword/Contolled
 
 export { LoadingIndicator } from './LoadingIndicator/LoadingIndicator';
 export { ErrorMessage } from './ErrorMessage/ErrorMessage';
+
+export {ControlledDatePicker} from './ControlledDatePicker/ControlledDatePicker';

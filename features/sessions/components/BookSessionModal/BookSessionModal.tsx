@@ -9,6 +9,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {format, addMinutes, isAfter, isBefore, startOfDay, endOfDay} from 'date-fns';
 import {uk} from 'date-fns/locale';
 import {styles} from './styles';
+import { PsychologistListItem } from '@/features/psychologists/types';
 
 interface BookSessionModalProps {
     visible: boolean;
@@ -45,10 +46,10 @@ export const BookSessionModal: React.FC<BookSessionModalProps> = ({visible, onCl
     const canBookSession = selectedTimeSlot !== null && selectedPsychologist !== null;
 
     // Обробник вибору психолога
-    const handleSelectPsychologist = (psych: any) => {
+    const handleSelectPsychologist = (psych: PsychologistListItem) => {
         setSelectedPsychologist({
             id: psych.id,
-            name: psych.username
+            name: psych.fullName
         });
     };
 
@@ -117,19 +118,20 @@ export const BookSessionModal: React.FC<BookSessionModalProps> = ({visible, onCl
                     <Card
                         style={[
                             s.psychologistCard,
-                            selectedPsychologist?.id === item.id.toString() && s.selectedPsychologistCard
+                            selectedPsychologist?.id === item.id && s.selectedPsychologistCard
                         ]}
                         onPress={() => handleSelectPsychologist(item)}
                     >
                         <Card.Content>
                             <CustomText variant="ezH4Semi">
-                                {item.username}
+                                {item.fullName}
                             </CustomText>
-                            {item.bio && (
-                                <CustomText variant="ezSubtitleRegular" style={s.bio}>
-                                    {item.bio.length > 100 ? `${item.bio.substring(0, 100)}...` : item.bio}
-                                </CustomText>
-                            )}
+                            <CustomText variant="ezSubtitleRegular" style={s.specialization}>
+                                {item.specialization}
+                            </CustomText>
+                            <CustomText variant="ezCaptionMedium" style={s.experience}>
+                                Досвід: {item.experience}
+                            </CustomText>
                         </Card.Content>
                     </Card>
                 )}
@@ -341,19 +343,20 @@ export const BookSessionModal: React.FC<BookSessionModalProps> = ({visible, onCl
                                         <Card
                                             style={[
                                                 s.psychologistCard,
-                                                selectedPsychologist?.id === item.id.toString() && s.selectedPsychologistCard
+                                                selectedPsychologist?.id === item.id && s.selectedPsychologistCard
                                             ]}
                                             onPress={() => handleSelectPsychologist(item)}
                                         >
                                             <Card.Content>
                                                 <CustomText variant="ezH4Semi">
-                                                    {item.username}
+                                                    {item.fullName}
                                                 </CustomText>
-                                                {item.bio && (
-                                                    <CustomText variant="ezSubtitleRegular" style={s.bio}>
-                                                        {item.bio.length > 100 ? `${item.bio.substring(0, 100)}...` : item.bio}
-                                                    </CustomText>
-                                                )}
+                                                <CustomText variant="ezSubtitleRegular" style={s.specialization}>
+                                                    {item.specialization}
+                                                </CustomText>
+                                                <CustomText variant="ezCaptionMedium" style={s.experience}>
+                                                    Досвід: {item.experience}
+                                                </CustomText>
                                             </Card.Content>
                                         </Card>
                                     )}

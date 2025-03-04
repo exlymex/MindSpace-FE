@@ -1,5 +1,5 @@
-import {KeyboardAvoidingView, Platform, StyleSheet, View, ScrollView} from 'react-native';
-import {Button, useTheme} from 'react-native-paper';
+import {KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View} from 'react-native';
+import {Button} from 'react-native-paper';
 import {useRouter} from 'expo-router';
 import {useSignInMutation} from '@/features/auth/api/authApi';
 import {LoginForm} from '@/features/auth/components/LoginForm';
@@ -24,12 +24,12 @@ export default function LoginScreen() {
     };
 
     return (
-        <KeyboardAvoidingView 
-            keyboardVerticalOffset={keyboardVerticalOffset} 
-            behavior="padding" 
+        <KeyboardAvoidingView
+            keyboardVerticalOffset={keyboardVerticalOffset}
+            behavior="padding"
             style={styles.wrapper}
         >
-            <ScrollView 
+            <ScrollView
                 contentContainerStyle={styles.scrollViewContent}
                 showsVerticalScrollIndicator={false}
             >
@@ -41,11 +41,11 @@ export default function LoginScreen() {
                     <LoginForm
                         onSubmit={handleSubmit}
                         isLoading={isLoading}
-                        error={error?.data?.message}
+                        error={error?.data?.detail}
                     />
 
                     <Button
-                        onPress={() => router.push('/forgot-password')}
+                        onPress={() => router.push('/+not-found')}
                         style={styles.textButton}
                     >
                         Забули пароль?

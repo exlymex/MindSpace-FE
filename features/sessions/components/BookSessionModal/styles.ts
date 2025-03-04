@@ -44,7 +44,7 @@ export const styles = (theme: AppTheme) => StyleSheet.create({
     },
     bio: {
         marginTop: theme.scale(4),
-        color: theme.colors.textSecondary,
+        color: theme.colors.ezGrayDark,
     },
     psychologistInfo: {
         marginBottom: theme.scale(20),
@@ -148,7 +148,7 @@ export const styles = (theme: AppTheme) => StyleSheet.create({
         backgroundColor: theme.colors.surfaceDisabled,
     },
     timeSlotText: {
-        color: theme.colors.text,
+        color: theme.colors.ezGrayDark,
     },
     selectedTimeSlotText: {
         color: theme.colors.onPrimary,
@@ -167,7 +167,7 @@ export const styles = (theme: AppTheme) => StyleSheet.create({
         backgroundColor: theme.colors.primary,
     },
     durationText: {
-        color: theme.colors.text,
+        color: theme.colors.ezGrayDark,
     },
     selectedDurationText: {
         color: theme.colors.onPrimary,
@@ -180,5 +180,13 @@ export const styles = (theme: AppTheme) => StyleSheet.create({
     },
     scrollContent: {
         paddingBottom: theme.scale(30),
+    },
+    specialization: {
+        color: theme.colors.ezGrayDark,
+        marginTop: theme.scale(4),
+    },
+    experience: {
+        color: theme.colors.ezGrayDark,
+        marginTop: theme.scale(4),
     },
 }); 

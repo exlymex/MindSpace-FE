@@ -1,6 +1,9 @@
 export type AuthUser = {
-  id: string;
-  email?: string;
+  id: number;
+  email: string;
+  role: 'student' | 'psychologist';
+  first_name: string;
+  last_name: string;
   isAnonymous: boolean;
 };
 
@@ -10,34 +13,89 @@ export type AuthState = {
   error: string | null;
 };
 
-export type RegisterFormData = {
-    username: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    role: 'student' | 'psychologist';
-};
+export interface LoginRequestData {
+  email: string;
+  password: string;
+}
 
-export type RegisterRequestData = Omit<RegisterFormData, 'confirmPassword'>;
+export interface RegisterRequestData {
+  email: string;
+  password: string;
+  role: 'student' | 'psychologist';
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  birth_date: Date | string;
+  // Додаткові поля для психологів
+  education?: string;
+  specialization?: string;
+  license_number?: string;
+  experience_years?: number;
+}
+
+export interface RegisterFormData extends RegisterRequestData {
+  confirmPassword: string;
+}
+
+export interface TokenResponse {
+  access_token: string;
+  token_type: string;
+}
+
+export interface UserResponse {
+  id: number;
+  email: string;
+  role: 'student' | 'psychologist';
+  first_name: string;
+  last_name: string;
+  bio: string | null;
+  avatar_url: string | null;
+  birth_date: string;
+  phone_number: string;
+  is_active: boolean;
+  created_at: string;
+  // Додаткові поля для психологів
+  education?: string | null;
+  specialization?: string | null;
+  license_number?: string | null;
+  experience_years?: number | null;
+}
 
 export interface User {
-    id: number;
-    username: string;
-    email: string;
-    role: 'student' | 'psychologist';
-    first_name: string | null;
-    last_name: string | null;
-    bio: string | null;
-    avatar_url: string | null;
-    birth_date: string | null;
-    phone_number: string | null;
+  id: number;
+  email: string;
+  role: 'student' | 'psychologist';
+  first_name: string;
+  last_name: string;
+  bio: string | null;
+  avatar_url: string | null;
+  birth_date: string;
+  phone_number: string;
+  is_active: boolean;
+  created_at: string;
+  // Додаткові поля для психологів
+  education?: string | null;
+  specialization?: string | null;
+  license_number?: string | null;
+  experience_years?: number | null;
 }
 
 export interface UserUpdate {
-    first_name?: string;
-    last_name?: string;
-    bio?: string;
-    avatar_url?: string;
-    birth_date?: string;
-    phone_number?: string;
+  first_name?: string;
+  last_name?: string;
+  bio?: string;
+  avatar_url?: string;
+  birth_date?: string;
+  phone_number?: string;
+  // Додаткові поля для психологів
+  education?: string;
+  specialization?: string;
+  license_number?: string;
+  experience_years?: number;
+}
+
+export interface AuthResponse {
+  access_token: string;
+  token_type: string;
+  user: UserResponse;
 }

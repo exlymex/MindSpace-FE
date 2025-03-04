@@ -1,28 +1,18 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import {User, UserUpdate} from '../types';
+import {LoginRequestData, RegisterRequestData, User, UserUpdate} from '../types';
 import {RootState} from '@/store/store';
 
-interface LoginRequest {
-    email: string;
-    password: string;
-}
-
-interface RegisterRequest {
-    username: string;
-    email: string;
-    password: string;
-    role: 'student' | 'psychologist';
-}
-
+// Визначте AuthResponse локально, якщо він використовується тільки тут
 interface AuthResponse {
-    access_token: string;
-    // token: string;
+  access_token: string;
+  token_type: string;
+  user: User;
 }
 
 export const authApi = createApi({
     reducerPath: 'authApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:8000/api/v1',
+        baseUrl: `http://localhost:8000/api/v1`,
         prepareHeaders: (headers, {getState}) => {
             const token = (getState() as RootState).auth.accessToken;
             if (token) {
@@ -33,19 +23,30 @@ export const authApi = createApi({
     }),
     tagTypes: ['User'],
     endpoints: (builder) => ({
-        signIn: builder.mutation<AuthResponse, LoginRequest>({
+        signIn: builder.mutation<AuthResponse, LoginRequestData>({
             query: (credentials) => ({
                 url: '/auth/login',
                 method: 'POST',
                 body: credentials,
             }),
         }),
-        signUp: builder.mutation<AuthResponse, RegisterRequest>({
-            query: (userData) => ({
-                url: '/auth/register',
-                method: 'POST',
-                body: userData,
-            }),
+        signUp: builder.mutation<AuthResponse, RegisterRequestData>({
+            query: (userData) => {
+                const formattedData = {...userData};
+
+                if (formattedData.birth_date instanceof Date) {
+                    const year = formattedData.birth_date.getFullYear();
+                    const month = String(formattedData.birth_date.getMonth() + 1).padStart(2, '0');
+                    const day = String(formattedData.birth_date.getDate()).padStart(2, '0');
+                    formattedData.birth_date = `${year}-${month}-${day}`;
+                }
+
+                return {
+                    url: '/auth/register',
+                    method: 'POST',
+                    body: formattedData,
+                };
+            },
         }),
         getCurrentUser: builder.query<User, void>({
             query: () => '/users/me',

@@ -21,7 +21,7 @@ export const ControlledPassword = <TFieldValues extends FieldValues, TName exten
                                                                                                                 label,
                                                                                                                 placeholder = 'Type here',
                                                                                                                 styleProp = {},
-                                                                                                                secureTextEntry,
+                                                                                                                secureTextEntry = true,
                                                                                                                 inputProps,
                                                                                                             }: ControlledInputProps<TFieldValues, TName>) => (
     <Controller
