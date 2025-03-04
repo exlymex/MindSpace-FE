@@ -1,18 +1,19 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import {LoginRequestData, RegisterRequestData, User, UserUpdate} from '../types';
 import {RootState} from '@/store/store';
+import {API_ENDPOINTS} from '@/config/api';
 
 // Визначте AuthResponse локально, якщо він використовується тільки тут
 interface AuthResponse {
-  access_token: string;
-  token_type: string;
-  user: User;
+    access_token: string;
+    token_type: string;
+    user: User;
 }
 
 export const authApi = createApi({
     reducerPath: 'authApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: `http://localhost:8000/api/v1`,
+        baseUrl: API_ENDPOINTS.auth,
         prepareHeaders: (headers, {getState}) => {
             const token = (getState() as RootState).auth.accessToken;
             if (token) {

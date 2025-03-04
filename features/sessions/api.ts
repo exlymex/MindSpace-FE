@@ -1,11 +1,12 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import {Session, SessionCreate} from './types';
 import {RootState} from '@/store/store';
+import {API_ENDPOINTS} from '@/config/api';
 
 export const sessionsApi = createApi({
     reducerPath: 'sessionsApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:8000/api/v1/sessions',
+        baseUrl: API_ENDPOINTS.sessions,
         prepareHeaders: (headers, {getState}) => {
             const token = (getState() as RootState).auth.accessToken;
             if (token) {
@@ -22,7 +23,7 @@ export const sessionsApi = createApi({
             // Додаємо трансформацію відповіді для сумісності з фронтендом
             transformResponse: (response: any[]) => {
                 if (!response) return [];
-                
+
                 return response.map(session => ({
                     id: String(session.id),
                     psychologistId: String(session.psychologist_id),

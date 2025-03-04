@@ -5,10 +5,11 @@ import {themeReducer} from "@/store/slices/themeSlice";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 import {authReducer} from "./slices/authSlice.ts";
 import chatReducer from './slices/chatSlice';
-import { notificationsReducer } from './slices/notificationsSlice';
-import { sessionsApi } from '@/features/sessions/api';
-import { psychologistsApi } from '@/features/psychologists/api';
-import { materialsApi } from '@/features/materials/api';
+import {notificationsReducer} from './slices/notificationsSlice';
+import {sessionsApi} from '@/features/sessions/api';
+import {psychologistsApi} from '@/features/psychologists/api';
+import {materialsApi} from '@/features/materials/api';
+import {chatApi} from '@/features/chat/api/chatApi';
 
 export const store = configureStore({
     reducer: {
@@ -16,18 +17,21 @@ export const store = configureStore({
         [sessionsApi.reducerPath]: sessionsApi.reducer,
         [psychologistsApi.reducerPath]: psychologistsApi.reducer,
         [materialsApi.reducerPath]: materialsApi.reducer,
+        [chatApi.reducerPath]: chatApi.reducer,
         theme: themeReducer,
         auth: authReducer,
         chat: chatReducer,
         notifications: notificationsReducer,
     },
-    middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(
+    middleware: (getDefaultMiddleware) => {
+        return getDefaultMiddleware().concat(
             authApi.middleware,
             sessionsApi.middleware,
             psychologistsApi.middleware,
-            materialsApi.middleware
-        ),
+            materialsApi.middleware,
+            chatApi.middleware
+        );
+    },
     devTools: true,
 });
 

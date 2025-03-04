@@ -5,7 +5,7 @@ import {useSignInMutation} from '@/features/auth/api/authApi';
 import {LoginForm} from '@/features/auth/components/LoginForm';
 import {CustomText} from "@/components";
 import {useAppDispatch} from "@/store/store.ts";
-import {setAccessToken} from "@/store/slices/authSlice.ts";
+import {setAccessToken, setUser} from "@/store/slices/authSlice.ts";
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -17,6 +17,7 @@ export default function LoginScreen() {
         try {
             const response = await signIn(data).unwrap();
             dispatch(setAccessToken(response.access_token));
+            dispatch(setUser(response.user));
             router.replace('/');
         } catch (error) {
             // Error is handled by RTK Query

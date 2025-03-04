@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {User} from '@/features/auth/types';
+import {API_BASE_URL} from '@/config/api';
 
 interface AuthState {
     accessToken: string | null;
@@ -29,12 +30,11 @@ export const initializeAuth = createAsyncThunk(
             dispatch(setAccessToken(token));
 
             try {
-                const response = await fetch('http://localhost:8000/api/v1/users/me', {
+                const response = await fetch(`${API_BASE_URL}/api/v1/users/me`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
-
                 if (response.ok) {
                     const userData = await response.json();
                     dispatch(setUser(userData));

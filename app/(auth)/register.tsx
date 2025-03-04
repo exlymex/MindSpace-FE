@@ -21,7 +21,7 @@ export default function RegisterScreen() {
         } catch (error: any) {
             Alert.alert(
                 'Помилка',
-                error.data?.message || 'Щось пішло не так. Спробуйте ще раз.',
+                error.data?.detail || 'Щось пішло не так. Спробуйте ще раз.',
                 [{text: 'OK'}]
             );
         }
