@@ -23,7 +23,6 @@ export const sessionsApi = createApi({
             // Додаємо трансформацію відповіді для сумісності з фронтендом
             transformResponse: (response: any[]) => {
                 if (!response) return [];
-
                 return response.map(session => ({
                     id: String(session.id),
                     psychologistId: String(session.psychologist_id),
@@ -41,6 +40,18 @@ export const sessionsApi = createApi({
         getSessionById: builder.query<Session, string>({
             query: (id) => `/${id}`,
             providesTags: (result, error, id) => [{type: 'Sessions', id}],
+            transformResponse: (response: any) => ({
+                id: String(response.id),
+                psychologistId: String(response.psychologist_id),
+                psychologistName: response.psychologist_name || "Невідомий психолог",
+                psychologistAvatar: response.psychologist_avatar || "",
+                date: response.date,
+                time: response.time,
+                duration: response.duration,
+                status: response.status,
+                notes: response.notes,
+                price: response.price
+            }),
         }),
         createSession: builder.mutation<Session, SessionCreate>({
             query: (sessionData) => ({

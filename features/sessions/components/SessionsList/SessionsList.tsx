@@ -45,7 +45,7 @@ export const SessionsList: FC = () => {
     if (error) {
         return (
             <View style={[s.container, {justifyContent: 'center', alignItems: 'center'}]}>
-                <CustomText variant="ezSubtitleRegular" style={{color: theme.colors.ezError}}>
+                <CustomText variant="ezSubtitleRegular" style={{color: theme.colors.ezRed}}>
                     Помилка завантаження сесій
                 </CustomText>
                 <Button
