@@ -49,9 +49,22 @@ export const authApi = createApi({
                 };
             },
         }),
+        getUserById: builder.query<User, number>({
+            query: (userId) => `/users/${userId}`,
+        }),
         getCurrentUser: builder.query<User, void>({
             query: () => '/users/me',
             providesTags: ['User'],
+        }),
+
+        searchUserByEmail: builder.query<User, { email: string, role?: string }>({
+            query: ({email, role}) => {
+                let url = `/users/search?email=${encodeURIComponent(email)}`;
+                if (role) {
+                    url += `&role=${encodeURIComponent(role)}`;
+                }
+                return url;
+            },
         }),
         updateUser: builder.mutation<User, UserUpdate>({
             query: (userData) => ({
@@ -77,6 +90,7 @@ export const {
     useSignInMutation,
     useSignUpMutation,
     useGetCurrentUserQuery,
+    useSearchUserByEmailQuery,
     useUpdateUserMutation,
     useUpdateAvatarMutation,
 } = authApi; 

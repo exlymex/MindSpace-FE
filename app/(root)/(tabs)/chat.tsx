@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {ActivityIndicator, Alert, View} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {MessageInput, MessageList} from '@/features/chat/components';
@@ -36,11 +36,24 @@ export default function ChatScreen() {
     });
     const [createChat] = useCreateChatMutation();
     const {data: psychologists = []} = useGetPsychologistsQuery();
+    
+    // Отримуємо інформацію про поточний чат
+    const currentChat = useMemo(() => {
+        if (!currentChatId || !chats || chats.length === 0) return null;
+        return chats.find(chat => chat.id === currentChatId);
+    }, [currentChatId, chats]);
+    
+    // Отримуємо ім'я співрозмовника
+    const participantName = useMemo(() => {
+        if (!currentChat || !currentChat.participant_info) return 'Психолог';
+        const { first_name, last_name } = currentChat.participant_info;
+        return `${first_name} ${last_name}`;
+    }, [currentChat]);
+    
     // Встановлюємо поточний чат, якщо він ще не встановлений
     useEffect(() => {
         if (!currentChatId && chats && chats.length > 0) {
             dispatch(setCurrentChatId(chats[0].id));
-
         }
     }, [chats, currentChatId, dispatch]);
 
@@ -144,8 +157,7 @@ export default function ChatScreen() {
                 style={s.header}
             >
                 <CustomText variant="ezH3Semi">
-
-                    Чат з психологом
+                    Чат з {participantName}
                 </CustomText>
                 {!isConnected && (
                     <CustomText
@@ -170,7 +182,7 @@ export default function ChatScreen() {
                         variant="ezSubtitleRegular"
                         style={s.typingIndicator}
                     >
-                        Психолог набирає повідомлення...
+                        {participantName} набирає повідомлення...
                     </CustomText>
                 )}
                 <MessageInput onSendMessage={sendMessage} onTypingStatus={sendTypingStatus}/>

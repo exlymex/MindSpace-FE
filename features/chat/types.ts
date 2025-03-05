@@ -1,9 +1,18 @@
 // Інтерфейси для API
+export interface ChatParticipantInfo {
+    id: number;
+    first_name: string;
+    last_name: string;
+    avatar_url?: string | null;
+}
+
 export interface Chat {
     id: number;
     student_id: number;
     psychologist_id: number;
     created_at: string;
+    last_message?: MessageResponse | null;
+    participant_info?: ChatParticipantInfo | null;
 }
 
 export interface MessageResponse {
