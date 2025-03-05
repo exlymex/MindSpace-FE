@@ -6,9 +6,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppSelector } from '@/store/store';
 import { AppTheme } from '@/theme/theme';
 import { router } from 'expo-router';
+import { useStyles } from '@/hooks';
 
 export default function PsychologistDashboard() {
-  const theme = useTheme<AppTheme>();
+  const { s, theme } = useStyles(styles);
   const { user } = useAppSelector(state => state.auth);
   const [isOnline, setIsOnline] = useState(false);
 
@@ -30,17 +31,17 @@ export default function PsychologistDashboard() {
   };
 
   return (
-    <SafeAreaView style={styles(theme).container}>
+    <SafeAreaView style={s.container}>
       <ScrollView>
         {/* Заголовок і статус */}
-        <View style={styles(theme).header}>
+        <View style={s.header}>
           <View>
-            <Text variant="headlineMedium" style={styles(theme).headerText}>
+            <Text variant="headlineMedium" style={s.headerText}>
               Вітаємо, {user?.first_name}!
             </Text>
             <Text variant="bodyMedium">Ваш психологічний дашборд</Text>
           </View>
-          <View style={styles(theme).statusContainer}>
+          <View style={s.statusContainer}>
             <Text variant="bodyMedium" style={{ marginRight: 8 }}>
               {isOnline ? 'Онлайн' : 'Офлайн'}
             </Text>
@@ -53,8 +54,8 @@ export default function PsychologistDashboard() {
         </View>
 
         {/* Статистика */}
-        <View style={styles(theme).statsContainer}>
-          <Card style={styles(theme).statCard}>
+        <View style={s.statsContainer}>
+          <Card style={s.statCard}>
             <Card.Content>
               <MaterialCommunityIcons name="account-group" size={24} color={theme.colors.primary} />
               <Text variant="titleLarge">12</Text>
@@ -62,7 +63,7 @@ export default function PsychologistDashboard() {
             </Card.Content>
           </Card>
           
-          <Card style={styles(theme).statCard}>
+          <Card style={s.statCard}>
             <Card.Content>
               <MaterialCommunityIcons name="calendar-check" size={24} color={theme.colors.primary} />
               <Text variant="titleLarge">5</Text>
@@ -70,7 +71,7 @@ export default function PsychologistDashboard() {
             </Card.Content>
           </Card>
           
-          <Card style={styles(theme).statCard}>
+          <Card style={s.statCard}>
             <Card.Content>
               <MaterialCommunityIcons name="message-text" size={24} color={theme.colors.primary} />
               <Text variant="titleLarge">3</Text>
@@ -80,7 +81,7 @@ export default function PsychologistDashboard() {
         </View>
 
         {/* Найближчі сесії */}
-        <Card style={styles(theme).sectionCard}>
+        <Card style={s.sectionCard}>
           <Card.Title 
             title="Найближчі сесії" 
             right={(props) => (
@@ -94,8 +95,8 @@ export default function PsychologistDashboard() {
           />
           <Card.Content>
             {upcomingSessions.map(session => (
-              <View key={session.id} style={styles(theme).sessionItem}>
-                <View style={styles(theme).sessionInfo}>
+              <View key={session.id} style={s.sessionItem}>
+                <View style={s.sessionInfo}>
                   <Text variant="titleMedium">{session.studentName}</Text>
                   <Text variant="bodyMedium">{session.date}, {session.time}</Text>
                 </View>
@@ -115,7 +116,7 @@ export default function PsychologistDashboard() {
         </Card>
 
         {/* Останні чати */}
-        <Card style={styles(theme).sectionCard}>
+        <Card style={s.sectionCard}>
           <Card.Title 
             title="Останні чати" 
             right={(props) => (
@@ -131,10 +132,10 @@ export default function PsychologistDashboard() {
             {recentChats.map(chat => (
               <TouchableOpacity 
                 key={chat.id} 
-                style={styles(theme).chatItem}
+                style={s.chatItem}
                 onPress={() => {/* Логіка для переходу до чату */}}
               >
-                <View style={styles(theme).chatAvatar}>
+                <View style={s.chatAvatar}>
                   <Avatar.Text 
                     size={40} 
                     label={chat.studentName.split(' ').map(n => n[0]).join('')} 
@@ -142,15 +143,15 @@ export default function PsychologistDashboard() {
                     style={{ backgroundColor: theme.colors.primary }}
                   />
                   {chat.unread > 0 && (
-                    <Badge style={styles(theme).badge}>{chat.unread}</Badge>
+                    <Badge style={s.badge}>{chat.unread}</Badge>
                   )}
                 </View>
-                <View style={styles(theme).chatInfo}>
+                <View style={s.chatInfo}>
                   <Text variant="titleMedium">{chat.studentName}</Text>
                   <Text 
                     variant="bodyMedium" 
                     numberOfLines={1} 
-                    style={chat.unread > 0 ? styles(theme).unreadMessage : {}}
+                    style={chat.unread > 0 ? s.unreadMessage : {}}
                   >
                     {chat.lastMessage}
                   </Text>
@@ -166,12 +167,12 @@ export default function PsychologistDashboard() {
         </Card>
 
         {/* Швидкі дії */}
-        <Card style={styles(theme).sectionCard}>
+        <Card style={s.sectionCard}>
           <Card.Title title="Швидкі дії" />
           <Card.Content>
-            <View style={styles(theme).actionsContainer}>
+            <View style={s.actionsContainer}>
               <TouchableOpacity 
-                style={styles(theme).actionButton}
+                style={s.actionButton}
                 onPress={() => router.push('/students' as any)}
               >
                 <MaterialCommunityIcons 
@@ -183,7 +184,7 @@ export default function PsychologistDashboard() {
               </TouchableOpacity>
               
               <TouchableOpacity 
-                style={styles(theme).actionButton}
+                style={s.actionButton}
                 onPress={() => {/* Логіка для створення нової сесії */}}
               >
                 <MaterialCommunityIcons 
@@ -195,7 +196,7 @@ export default function PsychologistDashboard() {
               </TouchableOpacity>
               
               <TouchableOpacity 
-                style={styles(theme).actionButton}
+                style={s.actionButton}
                 onPress={() => router.push('/profile' as any)}
               >
                 <MaterialCommunityIcons 
@@ -213,7 +214,7 @@ export default function PsychologistDashboard() {
   );
 }
 
-const styles = (theme: AppTheme) => StyleSheet.create({
+export const styles = (theme: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
@@ -222,13 +223,13 @@ const styles = (theme: AppTheme) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
-    backgroundColor: theme.colors.primaryContainer,
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
+    padding: theme.scale(16),
+    backgroundColor: theme.colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.ezGrayBackground,
   },
   headerText: {
-    color: theme.colors.primary,
+    color: theme.colors.ezPrimary,
     fontWeight: 'bold',
   },
   statusContainer: {
@@ -238,23 +239,43 @@ const styles = (theme: AppTheme) => StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 16,
+    padding: theme.scale(16),
   },
   statCard: {
     width: '30%',
-    padding: 8,
+    padding: theme.scale(8),
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.scale(12),
+    elevation: 2,
+    shadowColor: theme.colors.ezBlack,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   sectionCard: {
-    margin: 16,
-    marginTop: 0,
+    marginHorizontal: theme.scale(16),
+    marginBottom: theme.scale(16),
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.scale(12),
+    elevation: 2,
+    shadowColor: theme.colors.ezBlack,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   sessionItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: theme.scale(12),
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.surfaceVariant,
+    borderBottomColor: theme.colors.ezGrayBackground,
   },
   sessionInfo: {
     flex: 1,
@@ -262,33 +283,36 @@ const styles = (theme: AppTheme) => StyleSheet.create({
   chatItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: theme.scale(12),
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.surfaceVariant,
+    borderBottomColor: theme.colors.ezGrayBackground,
   },
   chatAvatar: {
     position: 'relative',
-    marginRight: 16,
+    marginRight: theme.scale(12),
+  },
+  chatInfo: {
+    flex: 1,
   },
   badge: {
     position: 'absolute',
     top: -4,
     right: -4,
-    backgroundColor: theme.colors.error,
-  },
-  chatInfo: {
-    flex: 1,
+    backgroundColor: theme.colors.ezRed,
   },
   unreadMessage: {
     fontWeight: 'bold',
+    color: theme.colors.onSurface,
   },
   actionsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 8,
+    paddingVertical: theme.scale(8),
   },
   actionButton: {
     alignItems: 'center',
-    padding: 12,
+    padding: theme.scale(12),
+    borderRadius: theme.scale(8),
+    backgroundColor: theme.colors.ezGrayBackground,
   },
 }); 

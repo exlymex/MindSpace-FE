@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AppTheme } from '@/theme/theme';
 import { router } from 'expo-router';
+import { useStyles } from '@/hooks';
 
 interface StudentItem {
   id: number;
@@ -19,7 +20,7 @@ interface StudentItem {
 }
 
 export default function PsychologistStudents() {
-  const theme = useTheme<AppTheme>();
+  const { s, theme } = useStyles(styles);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
@@ -104,17 +105,17 @@ export default function PsychologistStudents() {
   };
 
   const renderStudentCard = ({ item }: { item: StudentItem }) => (
-    <Card style={styles(theme).studentCard}>
+    <Card style={s.studentCard}>
       <Card.Content>
-        <View style={styles(theme).studentHeader}>
-          <View style={styles(theme).studentInfo}>
+        <View style={s.studentHeader}>
+          <View style={s.studentInfo}>
             <Avatar.Text 
               size={50} 
               label={item.name.split(' ').map(n => n[0]).join('')}
               color="white"
               style={{ backgroundColor: theme.colors.primary }}
             />
-            <View style={{ marginLeft: 12 }}>
+            <View style={{ marginLeft: theme.s }}>
               <Text variant="titleMedium">{item.name}</Text>
               <Text variant="bodyMedium">{item.email}</Text>
               <Text variant="bodySmall">{item.phone}</Text>
@@ -123,7 +124,7 @@ export default function PsychologistStudents() {
           <Chip 
             mode="outlined"
             style={[
-              styles(theme).statusChip,
+              s.statusChip,
               { 
                 backgroundColor: item.status === 'active' ? '#D5F2DF' : '#FEE7E7'
               }
@@ -136,31 +137,31 @@ export default function PsychologistStudents() {
           </Chip>
         </View>
         
-        <Divider style={{ marginVertical: 12 }} />
+        <Divider style={{ marginVertical: theme.s }} />
         
-        <View style={styles(theme).sessionInfo}>
-          <View style={styles(theme).infoRow}>
-            <Text variant="bodyMedium" style={styles(theme).infoLabel}>Остання сесія:</Text>
+        <View style={s.sessionInfo}>
+          <View style={s.infoRow}>
+            <Text variant="bodyMedium" style={s.infoLabel}>Остання сесія:</Text>
             <Text variant="bodyMedium">{formatDate(item.lastSession)}</Text>
           </View>
-          <View style={styles(theme).infoRow}>
-            <Text variant="bodyMedium" style={styles(theme).infoLabel}>Наступна сесія:</Text>
+          <View style={s.infoRow}>
+            <Text variant="bodyMedium" style={s.infoLabel}>Наступна сесія:</Text>
             <Text variant="bodyMedium">{formatDate(item.nextSession)}</Text>
           </View>
         </View>
         
         {item.notes && (
-          <View style={styles(theme).notesContainer}>
+          <View style={s.notesContainer}>
             <Text variant="bodySmall" style={{ color: theme.colors.outline }}>Нотатки:</Text>
             <Text variant="bodyMedium" numberOfLines={2}>{item.notes}</Text>
           </View>
         )}
         
-        <View style={styles(theme).tagsContainer}>
+        <View style={s.tagsContainer}>
           {item.tags.map(tag => (
             <Chip 
               key={tag} 
-              style={styles(theme).tag}
+              style={s.tag}
               onPress={() => setSelectedTag(tag === selectedTag ? null : tag)}
               selected={tag === selectedTag}
               selectedColor={theme.colors.primary}
@@ -171,11 +172,11 @@ export default function PsychologistStudents() {
           ))}
         </View>
         
-        <View style={styles(theme).actionButtons}>
+        <View style={s.actionButtons}>
           <Button 
             mode="contained" 
             onPress={() => router.push({ pathname: '/chat', params: { studentId: item.id } } as any)}
-            style={styles(theme).actionButton}
+            style={s.actionButton}
             icon="chat"
           >
             Чат
@@ -183,7 +184,7 @@ export default function PsychologistStudents() {
           <Button 
             mode="outlined" 
             onPress={() => {/* Логіка для планування сесії */}}
-            style={styles(theme).actionButton}
+            style={s.actionButton}
             icon="calendar-plus"
           >
             Сесія
@@ -191,7 +192,7 @@ export default function PsychologistStudents() {
           <Button 
             mode="text" 
             onPress={() => {/* Логіка для перегляду профілю */}}
-            style={styles(theme).actionButton}
+            style={s.actionButton}
             icon="account-details"
           >
             Профіль
@@ -202,9 +203,9 @@ export default function PsychologistStudents() {
   );
 
   return (
-    <SafeAreaView style={styles(theme).container}>
-      <View style={styles(theme).header}>
-        <Text variant="headlineMedium" style={styles(theme).headerTitle}>Студенти</Text>
+    <SafeAreaView style={s.container}>
+      <View style={s.header}>
+        <Text variant="headlineMedium" style={s.headerTitle}>Студенти</Text>
         <TouchableOpacity>
           <MaterialCommunityIcons name="filter-variant" size={24} color={theme.colors.primary} />
         </TouchableOpacity>
@@ -214,12 +215,12 @@ export default function PsychologistStudents() {
         placeholder="Пошук студентів"
         onChangeText={setSearchQuery}
         value={searchQuery}
-        style={styles(theme).searchbar}
+        style={s.searchbar}
         iconColor={theme.colors.primary}
       />
       
       {allTags.length > 0 && (
-        <View style={styles(theme).tagsFilterContainer}>
+        <View style={s.tagsFilterContainer}>
           <ScrollView 
             horizontal 
             showsHorizontalScrollIndicator={false}
@@ -227,7 +228,7 @@ export default function PsychologistStudents() {
             <Chip
               selected={selectedTag === null}
               onPress={() => setSelectedTag(null)}
-              style={styles(theme).filterChip}
+              style={s.filterChip}
               selectedColor={theme.colors.primary}
             >
               Всі теги
@@ -237,7 +238,7 @@ export default function PsychologistStudents() {
                 key={tag}
                 selected={selectedTag === tag}
                 onPress={() => setSelectedTag(tag === selectedTag ? null : tag)}
-                style={styles(theme).filterChip}
+                style={s.filterChip}
                 selectedColor={theme.colors.primary}
               >
                 {tag}
@@ -251,18 +252,18 @@ export default function PsychologistStudents() {
         data={filteredStudents}
         renderItem={renderStudentCard}
         keyExtractor={item => item.id.toString()}
-        contentContainerStyle={styles(theme).listContent}
+        contentContainerStyle={s.listContent}
         ListEmptyComponent={() => (
-          <View style={styles(theme).emptyContainer}>
+          <View style={s.emptyContainer}>
             <MaterialCommunityIcons 
               name="account-off" 
               size={64} 
               color={theme.colors.outline} 
             />
-            <Text variant="titleMedium" style={styles(theme).emptyText}>
+            <Text variant="titleMedium" style={s.emptyText}>
               Студентів не знайдено
             </Text>
-            <Text variant="bodyMedium" style={styles(theme).emptySubtext}>
+            <Text variant="bodyMedium" style={s.emptySubtext}>
               {searchQuery || selectedTag 
                 ? 'Спробуйте змінити параметри пошуку' 
                 : 'У вас поки немає студентів'}
@@ -274,7 +275,7 @@ export default function PsychologistStudents() {
   );
 }
 
-const styles = (theme: AppTheme) => StyleSheet.create({
+export const styles = (theme: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
@@ -283,31 +284,43 @@ const styles = (theme: AppTheme) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+    padding: theme.scale(16),
+    backgroundColor: theme.colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.ezGrayBackground,
   },
   headerTitle: {
-    color: theme.colors.primary,
+    color: theme.colors.ezPrimary,
     fontWeight: 'bold',
   },
   searchbar: {
-    marginHorizontal: 16,
-    marginBottom: 8,
-    backgroundColor: theme.colors.surfaceVariant,
+    marginHorizontal: theme.scale(16),
+    marginVertical: theme.scale(8),
+    backgroundColor: theme.colors.surface,
+    elevation: 2,
   },
   tagsFilterContainer: {
-    paddingHorizontal: 16,
-    marginBottom: 8,
+    paddingHorizontal: theme.scale(16),
+    marginBottom: theme.scale(8),
   },
   filterChip: {
-    marginRight: 8,
+    marginRight: theme.scale(8),
   },
   listContent: {
-    padding: 16,
+    padding: theme.scale(16),
   },
   studentCard: {
-    marginBottom: 16,
+    marginBottom: theme.scale(16),
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.scale(12),
+    elevation: 2,
+    shadowColor: theme.colors.ezBlack,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   studentHeader: {
     flexDirection: 'row',
@@ -323,48 +336,53 @@ const styles = (theme: AppTheme) => StyleSheet.create({
     borderWidth: 0,
   },
   sessionInfo: {
-    marginBottom: 12,
+    marginBottom: theme.scale(12),
   },
   infoRow: {
     flexDirection: 'row',
-    marginBottom: 4,
+    marginBottom: theme.scale(4),
   },
   infoLabel: {
     width: 120,
-    color: theme.colors.outline,
+    color: theme.colors.ezGrayDark,
   },
   notesContainer: {
-    marginBottom: 12,
+    marginBottom: theme.scale(12),
+    padding: theme.scale(8),
+    backgroundColor: theme.colors.ezGrayBackground,
+    borderRadius: theme.scale(8),
   },
   tagsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 12,
+    marginBottom: theme.scale(12),
   },
   tag: {
-    marginRight: 8,
-    marginBottom: 8,
+    marginRight: theme.scale(8),
+    marginBottom: theme.scale(8),
+    backgroundColor: theme.colors.ezGrayBackground,
   },
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
   },
   actionButton: {
-    marginRight: 8,
+    marginRight: theme.scale(8),
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    padding: theme.scale(32),
   },
   emptyText: {
-    marginTop: 16,
+    marginTop: theme.scale(16),
     textAlign: 'center',
+    color: theme.colors.ezGrayDark,
   },
   emptySubtext: {
-    marginTop: 8,
+    marginTop: theme.scale(8),
     textAlign: 'center',
-    color: theme.colors.outline,
+    color: theme.colors.ezGrayDark,
   },
 }); 

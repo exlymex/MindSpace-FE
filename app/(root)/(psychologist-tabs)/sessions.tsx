@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AppTheme } from '@/theme/theme';
 import { router } from 'expo-router';
+import { useStyles } from '@/hooks';
 
 interface SessionItem {
   id: number;
@@ -17,7 +18,7 @@ interface SessionItem {
 }
 
 export default function PsychologistSessions() {
-  const theme = useTheme<AppTheme>();
+  const { s, theme } = useStyles(styles);
   const [activeTab, setActiveTab] = useState('upcoming');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
@@ -95,17 +96,17 @@ export default function PsychologistSessions() {
   };
 
   const renderSessionCard = (session: SessionItem) => (
-    <Card key={session.id} style={styles(theme).sessionCard}>
+    <Card key={session.id} style={s.sessionCard}>
       <Card.Content>
-        <View style={styles(theme).sessionHeader}>
-          <View style={styles(theme).studentInfo}>
+        <View style={s.sessionHeader}>
+          <View style={s.studentInfo}>
             <Avatar.Text 
               size={40} 
               label={session.studentName.split(' ').map(n => n[0]).join('')}
               color="white"
               style={{ backgroundColor: theme.colors.primary }}
             />
-            <View style={{ marginLeft: 12 }}>
+            <View style={{ marginLeft: theme.xs }}>
               <Text variant="titleMedium">{session.studentName}</Text>
               <Text variant="bodyMedium">{formatDate(session.date)}, {session.time}</Text>
             </View>
@@ -113,7 +114,7 @@ export default function PsychologistSessions() {
           <Chip 
             mode="outlined"
             style={[
-              styles(theme).statusChip,
+              s.statusChip,
               { 
                 backgroundColor: 
                   session.status === 'upcoming' ? theme.colors.primaryContainer :
@@ -133,29 +134,29 @@ export default function PsychologistSessions() {
           </Chip>
         </View>
         
-        <Divider style={{ marginVertical: 12 }} />
+        <Divider style={{ marginVertical: theme.s }} />
         
-        <View style={styles(theme).sessionDetails}>
-          <View style={styles(theme).detailItem}>
+        <View style={s.sessionDetails}>
+          <View style={s.detailItem}>
             <MaterialCommunityIcons name="clock-outline" size={20} color={theme.colors.primary} />
-            <Text variant="bodyMedium" style={{ marginLeft: 8 }}>{session.duration}</Text>
+            <Text variant="bodyMedium" style={{ marginLeft: theme.xs }}>{session.duration}</Text>
           </View>
           
           {session.notes && (
-            <View style={styles(theme).notesContainer}>
+            <View style={s.notesContainer}>
               <Text variant="bodySmall" style={{ color: theme.colors.outline }}>Нотатки:</Text>
               <Text variant="bodyMedium">{session.notes}</Text>
             </View>
           )}
         </View>
         
-        <View style={styles(theme).actionButtons}>
+        <View style={s.actionButtons}>
           {session.status === 'upcoming' && (
             <>
               <Button 
                 mode="contained" 
                 onPress={() => {/* Логіка для початку сесії */}}
-                style={styles(theme).actionButton}
+                style={s.actionButton}
                 icon="video"
               >
                 Почати
@@ -163,7 +164,7 @@ export default function PsychologistSessions() {
               <Button 
                 mode="outlined" 
                 onPress={() => {/* Логіка для скасування */}}
-                style={styles(theme).actionButton}
+                style={s.actionButton}
                 textColor={theme.colors.error}
               >
                 Скасувати
@@ -175,7 +176,7 @@ export default function PsychologistSessions() {
             <Button 
               mode="outlined" 
               onPress={() => {/* Логіка для перегляду деталей */}}
-              style={styles(theme).actionButton}
+              style={s.actionButton}
               icon="note-text-outline"
             >
               Деталі
@@ -186,7 +187,7 @@ export default function PsychologistSessions() {
             <Button 
               mode="outlined" 
               onPress={() => {/* Логіка для перепланування */}}
-              style={styles(theme).actionButton}
+              style={s.actionButton}
               icon="calendar-refresh"
             >
               Перепланувати
@@ -198,9 +199,9 @@ export default function PsychologistSessions() {
   );
 
   return (
-    <SafeAreaView style={styles(theme).container}>
-      <View style={styles(theme).header}>
-        <Text variant="headlineMedium" style={styles(theme).headerTitle}>Сесії</Text>
+    <SafeAreaView style={s.container}>
+      <View style={s.header}>
+        <Text variant="headlineMedium" style={s.headerTitle}>Сесії</Text>
         <TouchableOpacity>
           <MaterialCommunityIcons name="calendar-month" size={24} color={theme.colors.primary} />
         </TouchableOpacity>
@@ -214,19 +215,19 @@ export default function PsychologistSessions() {
           { value: 'completed', label: 'Завершені' },
           { value: 'cancelled', label: 'Скасовані' },
         ]}
-        style={styles(theme).segmentedButtons}
+        style={s.segmentedButtons}
       />
       
       {uniqueDates.length > 0 && (
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles(theme).dateFiltersContainer}
+          contentContainerStyle={s.dateFiltersContainer}
         >
           <Chip
             selected={selectedDate === null}
             onPress={() => setSelectedDate(null)}
-            style={styles(theme).dateChip}
+            style={s.dateChip}
             selectedColor={theme.colors.primary}
           >
             Всі дати
@@ -236,7 +237,7 @@ export default function PsychologistSessions() {
               key={date}
               selected={selectedDate === date}
               onPress={() => setSelectedDate(date)}
-              style={styles(theme).dateChip}
+              style={s.dateChip}
               selectedColor={theme.colors.primary}
             >
               {formatDate(date)}
@@ -245,20 +246,20 @@ export default function PsychologistSessions() {
         </ScrollView>
       )}
       
-      <ScrollView contentContainerStyle={styles(theme).content}>
+      <ScrollView contentContainerStyle={s.content}>
         {filteredSessions.length > 0 ? (
           filteredSessions.map(renderSessionCard)
         ) : (
-          <View style={styles(theme).emptyContainer}>
+          <View style={s.emptyContainer}>
             <MaterialCommunityIcons 
               name="calendar-blank" 
               size={64} 
               color={theme.colors.outline} 
             />
-            <Text variant="titleMedium" style={styles(theme).emptyText}>
+            <Text variant="titleMedium" style={s.emptyText}>
               Немає сесій
             </Text>
-            <Text variant="bodyMedium" style={styles(theme).emptySubtext}>
+            <Text variant="bodyMedium" style={s.emptySubtext}>
               {activeTab === 'upcoming' 
                 ? 'У вас немає запланованих сесій' 
                 : activeTab === 'completed'
@@ -271,7 +272,7 @@ export default function PsychologistSessions() {
       
       <FAB
         icon="plus"
-        style={styles(theme).fab}
+        style={s.fab}
         onPress={() => {/* Логіка для створення нової сесії */}}
         color="white"
       />
@@ -279,7 +280,7 @@ export default function PsychologistSessions() {
   );
 }
 
-const styles = (theme: AppTheme) => StyleSheet.create({
+export const styles = (theme: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
@@ -288,36 +289,48 @@ const styles = (theme: AppTheme) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+    padding: theme.scale(16),
+    backgroundColor: theme.colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.ezGrayBackground,
   },
   headerTitle: {
-    color: theme.colors.primary,
+    color: theme.colors.ezPrimary,
     fontWeight: 'bold',
   },
   segmentedButtons: {
-    marginHorizontal: 16,
-    marginBottom: 8,
+    marginHorizontal: theme.m,
+    marginBottom: theme.xs,
   },
   dateFiltersContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingHorizontal: theme.m,
+    paddingBottom: theme.xs,
   },
   dateChip: {
-    marginRight: 8,
+    marginRight: theme.xs,
   },
   content: {
-    padding: 16,
-    paddingBottom: 80, // Додатковий відступ для FAB
+    flex: 1,
+    padding: theme.scale(16),
   },
   sessionCard: {
-    marginBottom: 16,
+    marginBottom: theme.scale(16),
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.scale(12),
+    elevation: 2,
+    shadowColor: theme.colors.ezBlack,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   sessionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: theme.scale(8),
   },
   studentInfo: {
     flexDirection: 'row',
@@ -327,44 +340,47 @@ const styles = (theme: AppTheme) => StyleSheet.create({
     borderWidth: 0,
   },
   sessionDetails: {
-    marginBottom: 12,
+    marginBottom: theme.scale(12),
   },
   detailItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: theme.scale(4),
   },
   notesContainer: {
-    marginTop: 8,
+    marginTop: theme.scale(8),
+    padding: theme.scale(12),
+    backgroundColor: theme.colors.ezGrayBackground,
+    borderRadius: theme.scale(8),
   },
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    marginTop: 8,
+    marginTop: theme.scale(12),
   },
   actionButton: {
-    marginRight: 8,
+    marginLeft: theme.scale(8),
   },
   fab: {
     position: 'absolute',
-    margin: 16,
-    right: 0,
-    bottom: 0,
-    backgroundColor: theme.colors.primary,
+    right: theme.scale(16),
+    bottom: theme.scale(16),
+    backgroundColor: theme.colors.ezPrimary,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    padding: theme.scale(32),
   },
   emptyText: {
-    marginTop: 16,
+    marginTop: theme.scale(16),
     textAlign: 'center',
+    color: theme.colors.ezGrayDark,
   },
   emptySubtext: {
-    marginTop: 8,
+    marginTop: theme.scale(8),
     textAlign: 'center',
-    color: theme.colors.outline,
+    color: theme.colors.ezGrayDark,
   },
 }); 

@@ -1,122 +1,141 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { Text, Searchbar, Avatar, Badge, Divider, useTheme, Chip } from 'react-native-paper';
+import { Text, Searchbar, Avatar, Badge, Divider, useTheme, Card } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { AppTheme } from '@/theme/theme';
 import { router } from 'expo-router';
+import { useStyles } from '@/hooks';
 
 interface ChatItem {
   id: number;
-  studentName: string;
+  name: string;
   lastMessage: string;
-  timestamp: string;
-  unread: number;
+  time: string;
+  unreadCount: number;
+  avatar?: string;
   isOnline: boolean;
 }
 
 export default function PsychologistChats() {
-  const theme = useTheme<AppTheme>();
+  const { s, theme } = useStyles(styles);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filter, setFilter] = useState<'all' | 'unread' | 'active'>('all');
 
   // Приклад даних для відображення
   const chats: ChatItem[] = [
     { 
       id: 1, 
-      studentName: 'Марія Шевченко', 
-      lastMessage: 'Дякую за консультацію! Це дуже допомогло мені розібратися з моїми проблемами.', 
-      timestamp: '10:30', 
-      unread: 2,
+      name: 'Марія Шевченко', 
+      lastMessage: 'Дякую за сьогоднішню сесію, було дуже корисно!',
+      time: '14:30',
+      unreadCount: 2,
+      avatar: 'https://randomuser.me/api/portraits/women/32.jpg',
       isOnline: true
     },
     { 
       id: 2, 
-      studentName: 'Олег Сидоренко', 
-      lastMessage: 'Коли ми можемо зустрітися для відеосесії?', 
-      timestamp: 'Вчора', 
-      unread: 0,
+      name: 'Олег Сидоренко', 
+      lastMessage: 'Коли у нас наступна зустріч?',
+      time: '12:15',
+      unreadCount: 0,
+      avatar: 'https://randomuser.me/api/portraits/men/44.jpg',
       isOnline: false
     },
     { 
       id: 3, 
-      studentName: 'Наталія Мельник', 
-      lastMessage: 'Я хотіла б перенести нашу зустріч на інший час, якщо це можливо.', 
-      timestamp: 'Вчора', 
-      unread: 1,
+      name: 'Наталія Мельник', 
+      lastMessage: 'Я виконала всі вправи, які ви рекомендували',
+      time: 'Вчора',
+      unreadCount: 1,
+      avatar: 'https://randomuser.me/api/portraits/women/68.jpg',
       isOnline: true
     },
     { 
       id: 4, 
-      studentName: 'Іван Петренко', 
-      lastMessage: 'Дякую за вашу пораду, я спробую застосувати ці техніки.', 
-      timestamp: '23 Тра', 
-      unread: 0,
+      name: 'Іван Петренко', 
+      lastMessage: 'Можемо перенести сесію на годину пізніше?',
+      time: 'Вчора',
+      unreadCount: 0,
       isOnline: false
     },
     { 
       id: 5, 
-      studentName: 'Анна Коваленко', 
-      lastMessage: 'Чи можемо ми обговорити результати останнього тесту?', 
-      timestamp: '20 Тра', 
-      unread: 0,
+      name: 'Анна Коваленко', 
+      lastMessage: 'Дякую за рекомендовану літературу',
+      time: '23.06',
+      unreadCount: 0,
+      avatar: 'https://randomuser.me/api/portraits/women/22.jpg',
       isOnline: false
     },
   ];
 
-  const filteredChats = chats.filter(chat => {
-    const matchesSearch = chat.studentName.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    if (filter === 'unread') {
-      return matchesSearch && chat.unread > 0;
-    } else if (filter === 'active') {
-      return matchesSearch && chat.isOnline;
-    }
-    
-    return matchesSearch;
-  });
+  // Фільтрація чатів за пошуком
+  const filteredChats = chats.filter(chat => 
+    chat.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const renderChatItem = ({ item }: { item: ChatItem }) => (
     <TouchableOpacity 
-      style={styles(theme).chatItem}
-      onPress={() => router.push({ pathname: '/chat', params: { id: item.id } } as any)}
+      style={s.chatItem}
+      onPress={() => router.push({ pathname: '/chat', params: { studentId: item.id } } as any)}
     >
-      <View style={styles(theme).avatarContainer}>
-        <Avatar.Text 
-          size={50} 
-          label={item.studentName.split(' ').map(n => n[0]).join('')}
-          color="white"
-          style={{ backgroundColor: theme.colors.primary }}
-        />
-        {item.isOnline && (
-          <View style={styles(theme).onlineIndicator} />
+      <View style={s.avatarContainer}>
+        {item.avatar ? (
+          <Avatar.Image 
+            size={50} 
+            source={{ uri: item.avatar }} 
+          />
+        ) : (
+          <Avatar.Text 
+            size={50} 
+            label={item.name.split(' ').map(n => n[0]).join('')}
+            color="white"
+            style={{ backgroundColor: theme.colors.primary }}
+          />
         )}
-        {item.unread > 0 && (
-          <Badge style={styles(theme).badge}>{item.unread}</Badge>
+        {item.isOnline && (
+          <View style={s.onlineIndicator} />
         )}
       </View>
-      <View style={styles(theme).chatContent}>
-        <View style={styles(theme).chatHeader}>
-          <Text variant="titleMedium">{item.studentName}</Text>
-          <Text variant="bodySmall" style={styles(theme).timestamp}>{item.timestamp}</Text>
+      
+      <View style={s.chatContent}>
+        <View style={s.chatHeader}>
+          <Text variant="titleMedium" numberOfLines={1} style={s.chatName}>
+            {item.name}
+          </Text>
+          <Text variant="bodySmall" style={s.chatTime}>
+            {item.time}
+          </Text>
         </View>
-        <Text 
-          variant="bodyMedium" 
-          numberOfLines={2} 
-          style={item.unread > 0 ? styles(theme).unreadMessage : {}}
-        >
-          {item.lastMessage}
-        </Text>
+        
+        <View style={s.chatFooter}>
+          <Text 
+            variant="bodyMedium" 
+            numberOfLines={1} 
+            style={[
+              s.lastMessage,
+              item.unreadCount > 0 && s.unreadMessage
+            ]}
+          >
+            {item.lastMessage}
+          </Text>
+          
+          {item.unreadCount > 0 && (
+            <Badge style={s.badge}>
+              {item.unreadCount}
+            </Badge>
+          )}
+        </View>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={styles(theme).container}>
-      <View style={styles(theme).header}>
-        <Text variant="headlineMedium" style={styles(theme).headerTitle}>Чати</Text>
+    <SafeAreaView style={s.container}>
+      <View style={s.header}>
+        <Text variant="headlineMedium" style={s.headerTitle}>Чати</Text>
         <TouchableOpacity>
-          <MaterialCommunityIcons name="cog" size={24} color={theme.colors.primary} />
+          <MaterialCommunityIcons name="filter-variant" size={24} color={theme.colors.primary} />
         </TouchableOpacity>
       </View>
       
@@ -124,64 +143,43 @@ export default function PsychologistChats() {
         placeholder="Пошук чатів"
         onChangeText={setSearchQuery}
         value={searchQuery}
-        style={styles(theme).searchbar}
+        style={s.searchbar}
         iconColor={theme.colors.primary}
       />
-      
-      <View style={styles(theme).filterContainer}>
-        <Chip 
-          selected={filter === 'all'} 
-          onPress={() => setFilter('all')}
-          style={styles(theme).filterChip}
-          selectedColor={theme.colors.primary}
-        >
-          Всі
-        </Chip>
-        <Chip 
-          selected={filter === 'unread'} 
-          onPress={() => setFilter('unread')}
-          style={styles(theme).filterChip}
-          selectedColor={theme.colors.primary}
-        >
-          Непрочитані
-        </Chip>
-        <Chip 
-          selected={filter === 'active'} 
-          onPress={() => setFilter('active')}
-          style={styles(theme).filterChip}
-          selectedColor={theme.colors.primary}
-        >
-          Онлайн
-        </Chip>
-      </View>
       
       <FlatList
         data={filteredChats}
         renderItem={renderChatItem}
         keyExtractor={item => item.id.toString()}
-        ItemSeparatorComponent={() => <Divider />}
-        contentContainerStyle={styles(theme).listContent}
+        ItemSeparatorComponent={() => <Divider style={s.divider} />}
+        contentContainerStyle={s.listContent}
         ListEmptyComponent={() => (
-          <View style={styles(theme).emptyContainer}>
+          <View style={s.emptyContainer}>
             <MaterialCommunityIcons 
               name="chat-remove" 
               size={64} 
               color={theme.colors.outline} 
             />
-            <Text variant="titleMedium" style={styles(theme).emptyText}>
-              Немає чатів
+            <Text variant="titleMedium" style={s.emptyText}>
+              Чатів не знайдено
             </Text>
-            <Text variant="bodyMedium" style={styles(theme).emptySubtext}>
-              {searchQuery ? 'Спробуйте змінити пошуковий запит' : 'У вас поки немає активних чатів'}
+            <Text variant="bodyMedium" style={s.emptySubtext}>
+              {searchQuery 
+                ? 'Спробуйте змінити параметри пошуку' 
+                : 'У вас поки немає активних чатів'}
             </Text>
           </View>
         )}
       />
+      
+      <TouchableOpacity style={s.fab}>
+        <MaterialCommunityIcons name="message-plus" size={24} color="white" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
-const styles = (theme: AppTheme) => StyleSheet.create({
+export const styles = (theme: AppTheme) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
@@ -190,54 +188,42 @@ const styles = (theme: AppTheme) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+    padding: theme.scale(16),
+    backgroundColor: theme.colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.ezGrayBackground,
   },
   headerTitle: {
-    color: theme.colors.primary,
+    color: theme.colors.ezPrimary,
     fontWeight: 'bold',
   },
   searchbar: {
-    marginHorizontal: 16,
-    marginBottom: 8,
-    backgroundColor: theme.colors.surfaceVariant,
-  },
-  filterContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    marginBottom: 8,
-  },
-  filterChip: {
-    marginRight: 8,
+    marginHorizontal: theme.scale(16),
+    marginVertical: theme.scale(8),
+    backgroundColor: theme.colors.surface,
+    elevation: 2,
   },
   listContent: {
-    paddingBottom: 16,
+    paddingBottom: theme.scale(80),
   },
   chatItem: {
     flexDirection: 'row',
-    padding: 16,
+    padding: theme.scale(16),
   },
   avatarContainer: {
     position: 'relative',
-    marginRight: 16,
+    marginRight: theme.scale(16),
   },
   onlineIndicator: {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: theme.colors.primary,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: theme.colors.ezGreen,
     borderWidth: 2,
     borderColor: theme.colors.background,
-  },
-  badge: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    backgroundColor: theme.colors.error,
   },
   chatContent: {
     flex: 1,
@@ -246,28 +232,62 @@ const styles = (theme: AppTheme) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: theme.scale(4),
   },
-  timestamp: {
-    color: theme.colors.outline,
+  chatName: {
+    flex: 1,
+    marginRight: theme.scale(8),
+    color: theme.colors.ezBlack,
+  },
+  chatTime: {
+    color: theme.colors.ezGrayDark,
+  },
+  chatFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  lastMessage: {
+    flex: 1,
+    color: theme.colors.ezGrayDark,
+    marginRight: theme.scale(8),
   },
   unreadMessage: {
+    color: theme.colors.ezBlack,
     fontWeight: 'bold',
-    color: theme.colors.onSurface,
+  },
+  badge: {
+    backgroundColor: theme.colors.ezPrimary,
+  },
+  divider: {
+    marginLeft: 70,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    padding: theme.scale(32),
   },
   emptyText: {
-    marginTop: 16,
+    marginTop: theme.scale(16),
     textAlign: 'center',
+    color: theme.colors.ezGrayDark,
   },
   emptySubtext: {
-    marginTop: 8,
+    marginTop: theme.scale(8),
     textAlign: 'center',
-    color: theme.colors.outline,
+    color: theme.colors.ezGrayDark,
+  },
+  fab: {
+    position: 'absolute',
+    right: theme.scale(16),
+    bottom: theme.scale(16),
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: theme.colors.ezPrimary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
   },
 }); 

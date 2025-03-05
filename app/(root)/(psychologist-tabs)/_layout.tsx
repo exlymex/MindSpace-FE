@@ -22,11 +22,12 @@ export default function PsychologistTabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.outline,
+        tabBarActiveTintColor: theme.colors.ezPrimary,
+        tabBarInactiveTintColor: theme.colors.ezGrayDark,
         tabBarStyle: { 
           paddingBottom: 5,
-          backgroundColor: theme.colors.primaryContainer, // Інший колір для психологів
+          backgroundColor: theme.colors.surface,
+          borderTopColor: theme.colors.ezGrayBackground,
         },
         headerShown: false
       }}
@@ -45,7 +46,7 @@ export default function PsychologistTabsLayout() {
         options={{
           title: 'Чати',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="chat-processing" size={size} color={color} />
+            <MaterialCommunityIcons name="chat" size={size} color={color} />
           ),
         }}
       />
@@ -72,8 +73,18 @@ export default function PsychologistTabsLayout() {
         options={{
           title: 'Профіль',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account-cog" size={size} color={color} />
+            <MaterialCommunityIcons name="account" size={size} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Налаштування',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="cog" size={size} color={color} />
+          ),
+          href: null, // Приховуємо з таб-бару, доступ через профіль
         }}
       />
     </Tabs>
