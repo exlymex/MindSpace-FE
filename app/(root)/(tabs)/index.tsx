@@ -57,10 +57,11 @@ export const styles = (theme: AppTheme) =>
         container: {
             flex: 1,
             backgroundColor: theme.colors.background,
-            paddingHorizontal: theme.scale(16),
         },
         scrollContent: {
             flexGrow: 1,
+            paddingHorizontal: theme.scale(16),
+
         },
         headerContainer: {
             zIndex: 1,
