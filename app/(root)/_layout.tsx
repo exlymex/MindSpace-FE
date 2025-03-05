@@ -2,7 +2,7 @@ import {useAppSelector} from "@/store/store.ts";
 import {Redirect, Slot} from 'expo-router';
 
 export default function AppLayout() {
-    const {accessToken} = useAppSelector((state) => state.auth);
+    const {accessToken, user} = useAppSelector((state) => state.auth);
 
     // You can keep the splash screen open, or render a loading screen like we do here.
     // if (isLoading) {

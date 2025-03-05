@@ -18,7 +18,13 @@ export default function LoginScreen() {
             const response = await signIn(data).unwrap();
             dispatch(setAccessToken(response.access_token));
             dispatch(setUser(response.user));
-            router.replace('/');
+            
+            // Перенаправляємо користувача залежно від ролі
+            if (response.user.role === 'psychologist') {
+                router.replace('/(root)/(psychologist-tabs)');
+            } else {
+                router.replace('/(root)/(tabs)');
+            }
         } catch (error) {
             // Error is handled by RTK Query
         }
