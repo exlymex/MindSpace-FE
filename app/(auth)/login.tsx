@@ -18,7 +18,7 @@ export default function LoginScreen() {
             const response = await signIn(data).unwrap();
             dispatch(setAccessToken(response.access_token));
             dispatch(setUser(response.user));
-            
+
             // Перенаправляємо користувача залежно від ролі
             if (response.user.role === 'psychologist') {
                 router.replace('/(root)/(psychologist-tabs)');
@@ -48,7 +48,7 @@ export default function LoginScreen() {
                     <LoginForm
                         onSubmit={handleSubmit}
                         isLoading={isLoading}
-                        error={error?.data?.detail}
+                        error={error?.data?.detail instanceof String ? error?.data?.detail : ""}
                     />
 
                     <Button

@@ -47,7 +47,6 @@ export default function GlobalRoot() {
             <Stack screenOptions={{headerShown: false}}>
                 <Stack.Screen name="(auth)" options={{headerShown: false}}/>
                 <Stack.Screen name="(root)" options={{headerShown: false}}/>
-                <Stack.Screen name="modal" options={{presentation: 'modal'}}/>
             </Stack>
         </PaperProvider>
     );

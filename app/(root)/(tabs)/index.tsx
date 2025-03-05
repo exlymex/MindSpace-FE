@@ -5,6 +5,7 @@ import {useStyles} from '@/hooks';
 import {Header, NotificationsBlock, QuickActions, UsefulMaterials} from '@/features/home/components';
 import {AppTheme} from '@/theme';
 import {useGetCurrentUserQuery} from '@/features/auth/api/authApi';
+import { getFullAvatarUrl } from '@/utils/getFullAvatarUrl';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
@@ -31,7 +32,7 @@ export default function HomeScreen() {
                     <Header 
                         firstName={userData?.first_name} 
                         lastName={userData?.last_name}
-                        avatarUrl={userData?.avatar_url}
+                        avatarUrl={getFullAvatarUrl(userData?.avatar_url)}
                     />
                 </Animated.View>
 

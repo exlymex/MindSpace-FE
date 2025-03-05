@@ -10,6 +10,7 @@ import {uk} from 'date-fns/locale';
 import Animated, {FadeIn, SlideInRight} from 'react-native-reanimated';
 import {AppTheme} from '@/theme';
 import {useCancelSessionMutation, useGetSessionByIdQuery} from '@/features/sessions/api';
+import { getFullAvatarUrl } from '@/utils/getFullAvatarUrl';
 
 
 const styles = (theme: AppTheme) => StyleSheet.create({
@@ -154,7 +155,6 @@ export default function SessionDetailsScreen() {
 
     const {data: session, isLoading, error} = useGetSessionByIdQuery(id as string);
     const [cancelSession, {isLoading: isCancelling}] = useCancelSessionMutation();
-    console.log(session, 'sis')
     if (isLoading) {
         return (
             <SafeAreaView style={s.container as any}>
@@ -266,7 +266,7 @@ export default function SessionDetailsScreen() {
 
                     <Animated.View entering={SlideInRight.duration(400).delay(200)} style={s.psychologistCard}>
                         <Image
-                            source={{uri: session.psychologistAvatar ? session.psychologistAvatar : defaultAvatarUri}}
+                            source={{uri: session.psychologistAvatar ? getFullAvatarUrl(session.psychologistAvatar) : defaultAvatarUri}}
                             style={s.avatar}/>
                         <View style={s.psychologistInfo}>
                             <CustomText variant="ezH4Semi" style={s.psychologistName}>

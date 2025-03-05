@@ -10,6 +10,7 @@ import {format} from 'date-fns';
 import {uk} from 'date-fns/locale';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {useCancelSessionMutation} from '@/features/sessions/api';
+import { getFullAvatarUrl } from '@/utils/getFullAvatarUrl';
 
 interface SessionCardProps {
     session: Session;
@@ -81,7 +82,7 @@ export const SessionCard: FC<SessionCardProps> = ({session}) => {
             <View style={s.header}>
                 <View style={s.psychologistInfo}>
                     <Image 
-                        source={{uri: session.psychologistAvatar || defaultAvatarUri}} 
+                        source={{uri: session.psychologistAvatar ? getFullAvatarUrl(session.psychologistAvatar) : defaultAvatarUri}} 
                         style={s.avatar}
                         defaultSource={{uri: defaultAvatarUri}}
                     />

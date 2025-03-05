@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View
+    Alert,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Button} from 'react-native-paper';
@@ -15,7 +15,7 @@ import {CustomBadge, CustomText, ErrorMessage, LoadingIndicator} from '@/compone
 import {useAppDispatch} from '@/store/store';
 import {logout} from '@/store/slices/authSlice';
 import {useRouter} from 'expo-router';
-import {useGetCurrentUserQuery, useUpdateUserMutation} from '@/features/auth/api/authApi';
+import {useGetCurrentUserQuery, useUpdateAvatarMutation, useUpdateUserMutation} from '@/features/auth/api/authApi';
 import {format} from 'date-fns';
 import {uk} from 'date-fns/locale';
 import * as ImagePicker from 'expo-image-picker';
@@ -28,8 +28,9 @@ import {ControlledInput} from '@/components/react-hook-form/ControlledInput/Cont
 import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import {getFullAvatarUrl} from '@/utils/getFullAvatarUrl';
 
-// Схема валідації для форми профілю
+
 const profileSchema = yup.object({
     first_name: yup.string().required("Ім'я обов'язкове"),
     last_name: yup.string().required("Прізвище обов'язкове"),
@@ -79,6 +80,7 @@ export default function ProfileScreen() {
 
     const {data: userData, isLoading, error, refetch} = useGetCurrentUserQuery();
     const [updateUser, {isLoading: isUpdating}] = useUpdateUserMutation();
+    const [updateAvatar, {isLoading: isUpdatingAvatar}] = useUpdateAvatarMutation();
 
     const [avatarUrl, setAvatarUrl] = useState('');
     const [birthDate, setBirthDate] = useState(new Date());
@@ -140,14 +142,37 @@ export default function ProfileScreen() {
         }
 
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: 'images',
             allowsEditing: true,
             aspect: [1, 1],
             quality: 0.5,
         });
 
-        if (!result.canceled) {
-            setAvatarUrl(result.assets[0].uri);
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            try {
+                // Створюємо FormData для відправки файлу
+                const formData = new FormData();
+                const fileUri = result.assets[0].uri;
+                const fileName = fileUri.split('/').pop() || 'avatar.jpg';
+
+                // @ts-ignore - FormData очікує специфічний тип, але ми знаємо, що це працює
+                formData.append('avatar', {
+                    uri: fileUri,
+                    name: fileName,
+                    type: 'image/jpeg',
+                });
+
+                // Відправляємо запит на оновлення аватара
+                await updateAvatar(formData).unwrap();
+                Alert.alert('Успіх', 'Аватар успішно оновлено');
+
+                // Оновлюємо локальний стан і дані користувача
+                setAvatarUrl(fileUri);
+                refetch();
+            } catch (error) {
+                console.error('Error updating avatar:', error);
+                Alert.alert('Помилка', 'Не вдалося оновити аватар');
+            }
         }
     };
 
@@ -169,9 +194,6 @@ export default function ProfileScreen() {
                 updateData.license_number = data.license_number;
                 updateData.experience_years = data.experience_years ? parseInt(data.experience_years) : undefined;
             }
-
-            // Тимчасово вимикаємо оновлення аватара
-            // Повністю видаляємо блок коду, пов'язаний з аватаром
 
             await updateUser(updateData).unwrap();
             Alert.alert('Успіх', 'Профіль успішно оновлено');
@@ -238,7 +260,7 @@ export default function ProfileScreen() {
                     <View style={s.profileCard}>
                         <View style={s.avatarContainer}>
                             {avatarUrl ? (
-                                <Image source={{uri: avatarUrl}} style={s.avatar}/>
+                                <Image source={{uri: getFullAvatarUrl(avatarUrl)}} style={s.avatar}/>
                             ) : (
                                 <View style={s.avatarPlaceholder}>
                                     <MaterialCommunityIcons name="account" size={80}
@@ -250,7 +272,7 @@ export default function ProfileScreen() {
                                 <View style={s.badgeContainer}>
                                     <CustomBadge
                                         text={userData.role === 'psychologist' ? 'Психолог' : 'Студент'}
-                                        backgroundColor={userData.role === 'psychologist' ? theme.colors.ezPrimary : theme.colors.ezSecondary}
+                                        backgroundColor={userData.role === 'psychologist' ? theme.colors.ezPrimary : theme.colors.secondary}
                                     />
                                 </View>
                             )}
@@ -313,7 +335,6 @@ export default function ProfileScreen() {
                                 maximumDate={new Date()}
                                 confirmTextIOS="Готово"
                                 cancelTextIOS="Скасувати"
-                                headerTextIOS="Оберіть дату народження"
                                 locale="uk"
                             />
 
@@ -353,7 +374,6 @@ export default function ProfileScreen() {
                             mode="outlined"
                             onPress={handleLogout}
                             style={s.logoutButton}
-                            icon="logout"
                         >
                             <CustomText variant="ezButtonMedium" style={s.logoutButtonText}>
                                 Вийти з облікового запису

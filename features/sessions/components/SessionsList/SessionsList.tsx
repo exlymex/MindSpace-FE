@@ -69,7 +69,7 @@ export const SessionsList: FC = () => {
                         onPress={() => setActiveTab(tab.value)}
                     >
                         <CustomText
-                            variant="ezSubtitleMedium"
+                            variant="ezSubtitleMediumLow"
                             style={[s.tabText, activeTab === tab.value && s.activeTabText]}
                         >
                             {tab.label}
