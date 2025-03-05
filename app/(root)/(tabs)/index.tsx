@@ -5,7 +5,7 @@ import {useStyles} from '@/hooks';
 import {Header, NotificationsBlock, QuickActions, UsefulMaterials} from '@/features/home/components';
 import {AppTheme} from '@/theme';
 import {useGetCurrentUserQuery} from '@/features/auth/api/authApi';
-import { getFullAvatarUrl } from '@/utils/getFullAvatarUrl';
+import {getFullAvatarUrl} from '@/utils/getFullAvatarUrl';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
@@ -29,8 +29,8 @@ export default function HomeScreen() {
                     entering={FadeIn.duration(1000)}
                     style={[s.headerContainer, headerAnimatedStyle]}
                 >
-                    <Header 
-                        firstName={userData?.first_name} 
+                    <Header
+                        firstName={userData?.first_name}
                         lastName={userData?.last_name}
                         avatarUrl={getFullAvatarUrl(userData?.avatar_url)}
                     />
@@ -41,9 +41,9 @@ export default function HomeScreen() {
                     style={s.contentContainer}
                 >
                     <QuickActions/>
-                    <NotificationsBlock 
-                        notifications={[]} 
-                        onNotificationPress={(id) => console.log('Notification pressed:', id)} 
+                    <NotificationsBlock
+                        notifications={[]}
+                        onNotificationPress={(id) => console.log('Notification pressed:', id)}
                     />
                     <UsefulMaterials/>
                 </Animated.View>
@@ -57,6 +57,7 @@ export const styles = (theme: AppTheme) =>
         container: {
             flex: 1,
             backgroundColor: theme.colors.background,
+            paddingHorizontal: theme.scale(16),
         },
         scrollContent: {
             flexGrow: 1,
@@ -66,6 +67,5 @@ export const styles = (theme: AppTheme) =>
         },
         contentContainer: {
             flex: 1,
-            paddingHorizontal: theme.scale(16),
         },
     });
