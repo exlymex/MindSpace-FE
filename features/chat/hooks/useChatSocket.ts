@@ -4,12 +4,15 @@ import {useAppDispatch, useAppSelector} from '@/store/store';
 import {addMessage, Message, setConnectionStatus, setTypingStatus} from '@/store/slices/chatSlice';
 import {API_URL} from "@/config/api.ts";
 
-export const useChatSocket = () => {
+export const useChatSocket = (role?: 'student' | 'psychologist') => {
     const dispatch = useAppDispatch();
     const accessToken = useAppSelector((state) => state.auth.accessToken);
     const user = useAppSelector((state) => state.auth.user);
     const {isTyping, isConnected, currentChatId} = useAppSelector((state) => state.chat);
     const socketRef = useRef<Socket | null>(null);
+    
+    // Визначаємо роль користувача
+    const userRole = role || (user?.role === 'psychologist' ? 'psychologist' : 'student');
 
     // Функція для підключення до сокета
     const connectSocket = useCallback(() => {
@@ -67,10 +70,15 @@ export const useChatSocket = () => {
                 
                 // Перевіряємо, що повідомлення належить до поточного чату
                 if (data.chat_id === currentChatId) {
+                    // Визначаємо відправника повідомлення в залежності від ролі
+                    const messageSender = userRole === 'psychologist' 
+                        ? (data.sender_id === user?.id ? 'psychologist' : 'user')
+                        : (data.sender_id === user?.id ? 'user' : 'psychologist');
+                    
                     const message: Message = {
                         id: data.message_id.toString(),
                         text: data.text,
-                        sender: data.sender_id === user?.id ? 'user' : 'psychologist',
+                        sender: messageSender,
                         timestamp: new Date(data.created_at).getTime()
                     };
                     dispatch(addMessage(message));
@@ -83,8 +91,11 @@ export const useChatSocket = () => {
             });
 
             // Підписуємося на статус набору тексту
-            socketRef.current.on('typing', (isTyping) => {
-                dispatch(setTypingStatus(isTyping));
+            socketRef.current.on('typing', (data) => {
+                // Перевіряємо, що статус набору належить до поточного чату
+                if (data.chat_id === currentChatId) {
+                    dispatch(setTypingStatus(data.is_typing));
+                }
             });
         }
 
@@ -95,7 +106,7 @@ export const useChatSocket = () => {
                 socketRef.current = null;
             }
         };
-    }, [dispatch, currentChatId, accessToken, user?.id, connectSocket]);
+    }, [dispatch, currentChatId, accessToken, user?.id, connectSocket, userRole]);
 
     // Функція для відправлення повідомлення
     const sendMessage = useCallback((text: string) => {
@@ -118,7 +129,7 @@ export const useChatSocket = () => {
         const message: Message = {
             id: tempMessageId,
             text: text,
-            sender: 'user', // Оскільки відправник - поточний користувач
+            sender: userRole === 'psychologist' ? 'psychologist' : 'user', // Визначаємо відправника в залежності від ролі
             timestamp: Date.now(), // Додаємо поточний час
             status: 'sending' // Опціонально: додаємо статус
         };
@@ -131,7 +142,7 @@ export const useChatSocket = () => {
             chat_id: currentChatId,
             text: text
         });
-    }, [currentChatId, dispatch]);
+    }, [currentChatId, dispatch, userRole]);
 
     // Функція для відправлення статусу набору тексту
     const sendTypingStatus = useCallback((isTyping: boolean) => {

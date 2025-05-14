@@ -87,6 +87,12 @@ export default function PsychologistTabsLayout() {
           href: null, // Приховуємо з таб-бару, доступ через профіль
         }}
       />
+      <Tabs.Screen
+        name="(chat)"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 } 

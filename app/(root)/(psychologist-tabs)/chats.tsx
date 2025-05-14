@@ -143,7 +143,7 @@ export default function PsychologistChats() {
             refetch();
 
             // Переходимо до нового чату
-            router.push({pathname: '/chat', params: {chatId: newChat.id, studentId: studentId}} as any);
+            router.push(`/(root)/(psychologist-tabs)/(chat)/${newChat.id}` as any);
         } catch (error) {
             console.error('Error creating chat:', error);
             Alert.alert('Помилка', 'Не вдалося створити чат');
@@ -153,10 +153,7 @@ export default function PsychologistChats() {
     const renderChatItem = ({item}: { item: ChatItem }) => (
         <TouchableOpacity
             style={s.chatItem}
-            onPress={() => router.push({
-                pathname: '/chat',
-                params: {chatId: item.id, studentId: item.student_id}
-            } as any)}
+            onPress={() => router.push(`/(root)/(psychologist-tabs)/(chat)/${item.id}` as any)}
         >
             <View style={s.avatarContainer}>
                 {item.avatar ? (
