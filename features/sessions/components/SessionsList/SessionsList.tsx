@@ -12,7 +12,7 @@ import {BookSessionModal} from '../BookSessionModal/BookSessionModal';
 
 const tabs = [
     {label: 'Всі', value: 'all'},
-    {label: 'Заплановані', value: 'upcoming'},
+    {label: 'Майбутні', value: 'upcoming'},
     {label: 'Завершені', value: 'completed'},
     {label: 'Скасовані', value: 'cancelled'},
 ];

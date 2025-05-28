@@ -4,7 +4,7 @@ import {createAction} from '@reduxjs/toolkit';
 export interface Message {
     id: string;
     text: string;
-    sender: 'user' | 'psychologist';
+    sender_id: number;
     timestamp: number;
     status?: string;
 }

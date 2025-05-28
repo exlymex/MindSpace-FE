@@ -11,7 +11,7 @@ export const MessageList: FC = () => {
     const messages = useAppSelector((state) => state.chat.messages);
     const currentChatId = useAppSelector((state) => state.chat.currentChatId);
     const [refreshing, setRefreshing] = useState(false);
-    
+    console.log(messages)
     // Використовуємо RTK Query для отримання повідомлень
     const {refetch} = useGetChatMessagesQuery(currentChatId || 0, {
         // Пропускаємо запит, якщо немає активного чату

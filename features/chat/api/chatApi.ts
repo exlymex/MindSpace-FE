@@ -24,19 +24,36 @@ export const chatApi = createApi({
         getUserChats: builder.query<Chat[], void>({
             query: () => '/api/v1/chats/',
             providesTags: ['Chats'],
+            transformResponse: (response: Chat[]) => {
+                const currentUser = store.getState().auth.user;
+                if (!currentUser) return response;
+
+                return response.map(chat => {
+                    // If participant_info is missing, construct it from the chat data
+                    if (!chat.participant_info) {
+                        const isStudent = currentUser.id === chat.psychologist_id;
+                        const participantId = isStudent ? chat.student_id : chat.psychologist_id;
+                        
+                        chat.participant_info = {
+                            id: participantId,
+                            first_name: `Користувач`,
+                            last_name: `#${participantId}`,
+                            avatar_url: null
+                        };
+                    }
+                    return chat;
+                });
+            }
         }),
 
         getChatMessages: builder.query<Message[], number>({
             query: (chatId) => `/api/v1/chats/${chatId}/messages`,
             providesTags: ['Messages'],
             transformResponse: (response: MessageResponse[]): Message[] => {
-                const userId = (store.getState() as RootState).auth.user?.id;
-                
-                // Перевіряємо, що повідомлення належать до чату поточного користувача
                 return response.map(msg => ({
                     id: msg.id.toString(),
                     text: msg.text,
-                    sender: msg.sender_id === userId ? 'user' : 'psychologist',
+                    sender_id: msg.sender_id,
                     timestamp: new Date(msg.created_at).getTime()
                 }));
             },

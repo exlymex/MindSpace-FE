@@ -13,7 +13,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {Button} from 'react-native-paper';
 import {CustomBadge, CustomText, ErrorMessage, LoadingIndicator} from '@/components';
 import {useAppDispatch} from '@/store/store';
-import {logout} from '@/store/slices/authSlice';
+import {logoutAndResetState} from '@/store/slices/authSlice';
 import {useRouter} from 'expo-router';
 import {useGetCurrentUserQuery, useUpdateAvatarMutation, useUpdateUserMutation} from '@/features/auth/api/authApi';
 import {format} from 'date-fns';
@@ -215,7 +215,7 @@ export default function ProfileScreen() {
                 {
                     text: 'Вийти',
                     onPress: () => {
-                        dispatch(logout());
+                        dispatch(logoutAndResetState());
                         router.replace('/(auth)/login');
                     },
                     style: 'destructive',

@@ -1,8 +1,8 @@
 // Базова URL-адреса API
 // Для Expo на реальному пристрої використовуйте вашу локальну IP-адресу
 // Для веб-версії або емулятора можна використовувати localhost
-export const API_BASE_URL = 'http://localhost:8000'; // Замініть на вашу IP-адресу
-export const API_URL = API_BASE_URL; // For socket.io connection
+export const API_BASE_URL = 'http://192.168.0.104:8000';
+export const API_URL = API_BASE_URL;
 
 // Окремі ендпоінти API
 export const API_ENDPOINTS = {
@@ -10,4 +10,5 @@ export const API_ENDPOINTS = {
   users: `${API_BASE_URL}/api/v1/users`,
   sessions: `${API_BASE_URL}/api/v1/sessions`,
   materials: `${API_BASE_URL}/api/v1/materials`,
+  chats: `${API_BASE_URL}/api/v1/chats`,
 }; 

@@ -320,18 +320,6 @@ export default function SessionDetailsScreen() {
                                 </CustomText>
                             </View>
 
-                            <View style={s.detailRow}>
-                                <View style={s.detailIcon}>
-                                    <IconButton icon="cash" size={20} iconColor={theme.colors.ezPrimary}
-                                                style={{margin: 0}}/>
-                                </View>
-                                <CustomText variant="ezSubtitleRegular" style={s.detailLabel}>
-                                    Вартість:
-                                </CustomText>
-                                <CustomText variant="ezSubtitleMedium" style={s.detailValue}>
-                                    {session.price} грн
-                                </CustomText>
-                            </View>
 
                             <View style={s.detailRow}>
                                 <View style={s.detailIcon}>

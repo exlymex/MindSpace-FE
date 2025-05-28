@@ -34,7 +34,6 @@ export const useChatSocket = (role?: 'student' | 'psychologist') => {
         // Додаємо логування для відстеження подій сокета
         socket.on('connect_error', (error) => {
             console.error('Socket connection error:', error);
-
         });
 
         socket.on('error', (error) => {
@@ -70,15 +69,10 @@ export const useChatSocket = (role?: 'student' | 'psychologist') => {
                 
                 // Перевіряємо, що повідомлення належить до поточного чату
                 if (data.chat_id === currentChatId) {
-                    // Визначаємо відправника повідомлення в залежності від ролі
-                    const messageSender = userRole === 'psychologist' 
-                        ? (data.sender_id === user?.id ? 'psychologist' : 'user')
-                        : (data.sender_id === user?.id ? 'user' : 'psychologist');
-                    
                     const message: Message = {
                         id: data.message_id.toString(),
                         text: data.text,
-                        sender: messageSender,
+                        sender_id: data.sender_id,
                         timestamp: new Date(data.created_at).getTime()
                     };
                     dispatch(addMessage(message));
@@ -106,12 +100,12 @@ export const useChatSocket = (role?: 'student' | 'psychologist') => {
                 socketRef.current = null;
             }
         };
-    }, [dispatch, currentChatId, accessToken, user?.id, connectSocket, userRole]);
+    }, [dispatch, currentChatId, accessToken, user?.id, connectSocket]);
 
     // Функція для відправлення повідомлення
     const sendMessage = useCallback((text: string) => {
-        if (!socketRef.current) {
-            console.error('Socket not connected');
+        if (!socketRef.current || !user?.id) {
+            console.error('Socket not connected or user not found');
             return;
         }
 
@@ -129,9 +123,9 @@ export const useChatSocket = (role?: 'student' | 'psychologist') => {
         const message: Message = {
             id: tempMessageId,
             text: text,
-            sender: userRole === 'psychologist' ? 'psychologist' : 'user', // Визначаємо відправника в залежності від ролі
-            timestamp: Date.now(), // Додаємо поточний час
-            status: 'sending' // Опціонально: додаємо статус
+            sender_id: user.id,
+            timestamp: Date.now(),
+            status: 'sending'
         };
         
         // Додаємо повідомлення до Redux
@@ -142,7 +136,7 @@ export const useChatSocket = (role?: 'student' | 'psychologist') => {
             chat_id: currentChatId,
             text: text
         });
-    }, [currentChatId, dispatch, userRole]);
+    }, [currentChatId, dispatch, user?.id]);
 
     // Функція для відправлення статусу набору тексту
     const sendTypingStatus = useCallback((isTyping: boolean) => {

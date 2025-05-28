@@ -21,10 +21,10 @@ export const styles = (theme: AppTheme) =>
     userMessage: {
       alignSelf: 'flex-end',
       marginRight: theme.scale(24),
-      backgroundColor: theme.colors.ezPrimaryLight,
+      backgroundColor: theme.colors.ezPrimary,
       borderBottomRightRadius: theme.scale(4),
     },
-    psychologistMessage: {
+    otherUserMessage: {
       alignSelf: 'flex-start',
       backgroundColor: theme.colors.surface,
       borderBottomLeftRadius: theme.scale(4),
@@ -34,9 +34,9 @@ export const styles = (theme: AppTheme) =>
       lineHeight: theme.scale(20),
     },
     userMessageText: {
-      color: theme.colors.ezBlack,
+      color: theme.colors.surface,
     },
-    psychologistMessageText: {
+    otherUserMessageText: {
       color: theme.colors.ezBlack,
     },
     timestamp: {
@@ -46,9 +46,9 @@ export const styles = (theme: AppTheme) =>
       opacity: 0.7,
     },
     userTimestamp: {
-      color: theme.colors.ezGrayDark,
+      color: theme.colors.surface,
     },
-    psychologistTimestamp: {
+    otherUserTimestamp: {
       color: theme.colors.ezGrayDark,
     },
   }); 

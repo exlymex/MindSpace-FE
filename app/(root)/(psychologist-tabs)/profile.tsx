@@ -7,7 +7,7 @@ import { AppTheme } from '@/theme/theme';
 import { useStyles } from '@/hooks';
 import { router } from 'expo-router';
 import { useAppDispatch } from '@/store/store';
-import { logout } from '@/store/slices/authSlice';
+import { logoutAndResetState } from '@/store/slices/authSlice';
 import { useGetCurrentUserQuery, useUpdateAvatarMutation } from '@/features/auth/api/authApi';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
@@ -90,7 +90,7 @@ export default function PsychologistProfile() {
   };
   
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logoutAndResetState());
     router.replace('/(auth)/login');
   };
 

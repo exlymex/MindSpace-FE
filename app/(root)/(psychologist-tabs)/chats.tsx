@@ -81,31 +81,24 @@ export default function PsychologistChats() {
         if (!apiChats || !apiChats.length) return [];
 
         return apiChats.map(chat => {
-            const isStudent = chat.student_id === currentUser?.id;
-
             const participantInfo = chat.participant_info;
-
+            
             const chatItem: ChatItem = {
                 id: chat.id,
                 name: participantInfo
                     ? `${participantInfo.first_name} ${participantInfo.last_name}`
-                    : isStudent ? 'Психолог' : `Студент ${chat.student_id}`,
-                lastMessage: 'Немає повідомлень',
-                time: formatChatTime(chat.created_at),
+                    : `Студент ${chat.student_id}`,
+                lastMessage: chat.last_message?.text || 'Немає повідомлень',
+                time: formatChatTime(chat.last_message?.created_at || chat.created_at),
                 unreadCount: 0,
                 avatar: participantInfo?.avatar_url || undefined,
                 isOnline: false,
                 student_id: chat.student_id
             };
 
-            if (chat.last_message) {
-                chatItem.lastMessage = chat.last_message.text;
-                chatItem.time = formatChatTime(chat.last_message.created_at);
-            }
-
             return chatItem;
         });
-    }, [apiChats, currentUser]);
+    }, [apiChats]);
 
     // Фільтрація чатів за пошуком
     const filteredChats = useMemo(() => {

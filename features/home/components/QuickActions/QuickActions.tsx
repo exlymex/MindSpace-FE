@@ -64,7 +64,7 @@ export function QuickActions() {
                 const welcomeMessage: Message = {
                     id: Date.now().toString(),
                     text: `Вітаю! Я ${psychologist.first_name} ${psychologist.last_name}, ваш особистий психолог. Чим я можу вам допомогти сьогодні?`,
-                    sender: 'psychologist',
+                    sender_id: psychologist.id,
                     timestamp: Date.now()
                 };
 

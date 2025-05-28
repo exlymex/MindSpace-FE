@@ -11,28 +11,28 @@ import {psychologistsApi} from '@/features/psychologists/api';
 import {materialsApi} from '@/features/materials/api';
 import {chatApi} from '@/features/chat/api/chatApi';
 
+const rootReducer = {
+    [authApi.reducerPath]: authApi.reducer,
+    [sessionsApi.reducerPath]: sessionsApi.reducer,
+    [psychologistsApi.reducerPath]: psychologistsApi.reducer,
+    [materialsApi.reducerPath]: materialsApi.reducer,
+    [chatApi.reducerPath]: chatApi.reducer,
+    theme: themeReducer,
+    auth: authReducer,
+    chat: chatReducer,
+    notifications: notificationsReducer,
+};
+
 export const store = configureStore({
-    reducer: {
-        [authApi.reducerPath]: authApi.reducer,
-        [sessionsApi.reducerPath]: sessionsApi.reducer,
-        [psychologistsApi.reducerPath]: psychologistsApi.reducer,
-        [materialsApi.reducerPath]: materialsApi.reducer,
-        [chatApi.reducerPath]: chatApi.reducer,
-        theme: themeReducer,
-        auth: authReducer,
-        chat: chatReducer,
-        notifications: notificationsReducer,
-    },
-    middleware: (getDefaultMiddleware) => {
-        return getDefaultMiddleware().concat(
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(
             authApi.middleware,
             sessionsApi.middleware,
             psychologistsApi.middleware,
             materialsApi.middleware,
             chatApi.middleware
-        );
-    },
-    devTools: true,
+        ),
 });
 
 setupListeners(store.dispatch);

@@ -2,6 +2,11 @@ import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {User} from '@/features/auth/types';
 import {API_BASE_URL} from '@/config/api';
+import {authApi} from '@/features/auth/api/authApi';
+import {chatApi} from '@/features/chat/api/chatApi';
+import {sessionsApi} from '@/features/sessions/api';
+import {psychologistsApi} from '@/features/psychologists/api';
+import {materialsApi} from '@/features/materials/api';
 
 interface AuthState {
     accessToken: string | null;
@@ -51,6 +56,21 @@ export const initializeAuth = createAsyncThunk(
             console.error('Failed to initialize auth:', error);
             return null;
         }
+    }
+);
+
+export const logoutAndResetState = createAsyncThunk(
+    'auth/logoutAndResetState',
+    async (_, {dispatch}) => {
+        // Reset all API states
+        dispatch(authApi.util.resetApiState());
+        dispatch(chatApi.util.resetApiState());
+        dispatch(sessionsApi.util.resetApiState());
+        dispatch(psychologistsApi.util.resetApiState());
+        dispatch(materialsApi.util.resetApiState());
+        
+        // Dispatch regular logout action
+        dispatch(logout());
     }
 );
 
